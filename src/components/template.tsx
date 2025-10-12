@@ -1,22 +1,19 @@
-import { ReactElement } from 'react'; 
-import {useState} from 'react';
-import reactLogo from '@/assets/react.svg'
-import viteLogo from '../../public/vite.svg'
+import { useState } from "react";
+import reactLogo from "../assets/react.svg";
+import viteLogo from "../assets/vite.svg";
 
+import "./template.css";
 
-import './template.css'
+export function ReactViteTemplate() {
+  const [count, setCount] = useState(0);
 
-export default ReactViteTemplate():ReactElement {
-
-    const [count, setCount] = useState(0)
-
-    return(
-        <>
-       <div>
-        <a href="https://vite.dev" target="_blank" rel="noreferrer">
+  return (
+    <>
+      <div>
+        <a href="https://vite.dev" target="_blank" rel="noopener noreferrer">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
-        <a href="https://react.dev" target="_blank" rel="noreferrer">
+        <a href="https://react.dev" target="_blank" rel="noopener noreferrer">
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
@@ -33,5 +30,7 @@ export default ReactViteTemplate():ReactElement {
         Click on the Vite and React logos to learn more
       </p>
     </>
-  )
+  );
 }
+
+export default ReactViteTemplate;

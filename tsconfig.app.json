@@ -6,7 +6,13 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "types": ["vite/client"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@triplex/*": [".triplex/*"]
+    },
     "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -24,6 +30,7 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
+  "files": ["src/env.d.ts", "src/global.d.ts"],
   "include": ["src"],
   "exclude": ["src/**/*.test.*", "src/**/*.spec.*"]
 }
