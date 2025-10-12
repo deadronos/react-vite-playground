@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react'; 
+import { ReactElement } from 'react'; 
 import {useState} from 'react';
 import reactLogo from '@/assets/react.svg'
 import viteLogo from '../../public/vite.svg'
@@ -6,7 +6,7 @@ import viteLogo from '../../public/vite.svg'
 
 import './template.css'
 
-export function ReactViteTemplate():ReactElement {
+export default ReactViteTemplate():ReactElement {
 
     const [count, setCount] = useState(0)
 
@@ -35,5 +35,3 @@ export function ReactViteTemplate():ReactElement {
     </>
   )
 }
-
-export default ReactViteTemplate();

@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react'
-import "globals.css"
+import "./globals.css"
 import './App.css'
 import { Theme } from "@radix-ui/themes"
 import { ReactViteTemplate } from './components/template'
