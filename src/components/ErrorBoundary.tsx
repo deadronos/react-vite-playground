@@ -1,6 +1,6 @@
-import { Component } from "react";
-import type { ErrorInfo, ReactNode } from "react";
-import "./error-boundary.css";
+import { Component } from 'react';
+import type { ErrorInfo, ReactNode } from 'react';
+import './error-boundary.css';
 
 type FallbackRender = (error: Error | null) => ReactNode;
 
@@ -33,13 +33,13 @@ export default class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, info: ErrorInfo) {
     // Centralized place to log caught errors. Integrate with an
     // external monitoring service here when needed.
-    console.error("Uncaught error in ErrorBoundary:", error, info);
+    console.error('Uncaught error in ErrorBoundary:', error, info);
   }
 
   render() {
     if (this.state.hasError) {
       const { fallback } = this.props;
-      if (typeof fallback === "function") {
+      if (typeof fallback === 'function') {
         return fallback(this.state.error);
       }
       if (fallback) return fallback;

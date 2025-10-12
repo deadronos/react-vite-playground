@@ -29,10 +29,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": [
-    "vite.config.ts",
-    "vitest.config.ts",
-    ".triplex/**/*.ts",
-    ".triplex/**/*.tsx"
-  ]
+  "include": ["vite.config.ts", "vitest.config.ts", ".triplex/**/*.ts", ".triplex/**/*.tsx"]
 }

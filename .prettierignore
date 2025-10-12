@@ -1,6 +1,7 @@
-dist/
-coverage/
 node_modules/
-.yarn/
-*.gltf
-*.mdx
+dist/
+build/
+coverage/
+.vscode/
+.idea/
+*.min.js

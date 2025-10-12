@@ -1,10 +1,9 @@
-@import "tailwindcss/base";
-@import "tailwindcss/theme.css" layer(theme);
-@import "tailwindcss/preflight.css" layer(base);
+@import 'tailwindcss/base';
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
 
 /* Place Radix UI theme styles in the components layer so they are available
 	to component-level styles but can be overridden by Tailwind utilities. */
-@import "@radix-ui/themes/styles.css" layer(components);
+@import '@radix-ui/themes/styles.css' layer(components);
 
-@import "tailwindcss/utilities.css" layer(utilities);
-
+@import 'tailwindcss/utilities.css' layer(utilities);

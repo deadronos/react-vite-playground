@@ -22,36 +22,32 @@ declare global {
 }
 
 function isRecord(v: unknown): v is Record<string, unknown> {
-  return !!v && typeof v === "object";
+  return !!v && typeof v === 'object';
 }
 
 function sanitizeInjected(injected: Record<string, unknown>) {
   try {
     const setStringIfEmpty = (key: string, fallback: string) => {
       const val = injected[key];
-      if (typeof val === "string" && val.trim() === "")
-        injected[key] = fallback;
+      if (typeof val === 'string' && val.trim() === '') injected[key] = fallback;
     };
 
-    setStringIfEmpty("version", "0.0.0");
-    setStringIfEmpty("reconcilerVersion", "0.0.0");
-    setStringIfEmpty("rendererPackageName", "unknown-renderer");
+    setStringIfEmpty('version', '0.0.0');
+    setStringIfEmpty('reconcilerVersion', '0.0.0');
+    setStringIfEmpty('rendererPackageName', 'unknown-renderer');
 
-    if (!("bundleType" in injected)) injected.bundleType = 0;
+    if (!('bundleType' in injected)) injected.bundleType = 0;
   } catch (err) {
-    console.warn(
-      "devtools-sanitizer: failed to sanitize renderer metadata",
-      err,
-    );
+    console.warn('devtools-sanitizer: failed to sanitize renderer metadata', err);
   }
 }
 
 function wrapHook(hook: Record<string, unknown>) {
   const maybeInject = hook.inject;
-  if (typeof maybeInject !== "function") return;
+  if (typeof maybeInject !== 'function') return;
 
   const originalInject = maybeInject as (...args: unknown[]) => unknown;
-  Object.defineProperty(hook, "inject", {
+  Object.defineProperty(hook, 'inject', {
     configurable: true,
     enumerable: false,
     writable: true,
@@ -68,7 +64,7 @@ function wrapHook(hook: Record<string, unknown>) {
 }
 
 (function install() {
-  const hookName = "__REACT_DEVTOOLS_GLOBAL_HOOK__";
+  const hookName = '__REACT_DEVTOOLS_GLOBAL_HOOK__';
   const win = window as unknown as Record<string, unknown>;
 
   // If the hook already exists, wrap it immediately.
