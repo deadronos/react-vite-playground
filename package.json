@@ -24,6 +24,7 @@
     "@types/three": "^0.180.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "render-composer": "^0.2.8",
     "three": "^0.180.0",
     "tslib": "^2.8.1"
   },
@@ -53,6 +54,7 @@
     "less": "^4.4.2",
     "postcss": "^8.5.6",
     "postcss-import": "^16.1.1",
+    "postcss-nesting": "^13.0.2",
     "postcss-preset-env": "^10.4.0",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",

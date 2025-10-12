@@ -1,11 +1,17 @@
+import * as RC from 'render-composer'
+
+
 function R3FView() {
   return (
-    <Application>
-      <mesh>
+    <RC.Canvas strict>
+      <RC.RenderPipeline>
+        <mesh>
         <dodecahedronGeometry />
         <meshStandardMaterial />
       </mesh>
-    </Application>
+      </RC.RenderPipeline>
+    </RC.Canvas>
+
   );
 }
 
