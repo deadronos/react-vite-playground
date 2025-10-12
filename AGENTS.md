@@ -19,7 +19,6 @@ progressive designs are at '/memory/designs'
 **ID Management**: Ensure unique Task/Design IDs across both active designs and tasks folders and `/COMPLETED/` subfolders.
 📖 **Full Details**: See `.github/instructions/memory-bank.instructions.md`
 
-
 ## 📝 Before You Start
 
 1. ✅ Check Memory Bank files in `/memory/`

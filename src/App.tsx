@@ -1,38 +1,36 @@
-import type { ReactElement } from 'react'; 
-import {useState} from 'react';
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import "@radix-ui/themes/styles.css";
+import type { ReactElement } from 'react'
+import * as React from 'react';
 import './App.css'
-// ...existing code...
+import { Theme } from "@radix-ui/themes"
+import R3FStage from './components/r3fview'
+import ErrorBoundary from './components/ErrorBoundary'
+
+
 
 
 function App(): ReactElement {
-  const [count, setCount] = useState(0)
+  
 
   return (
-    <>
-       <div>
-        <a href="https://vite.dev" target="_blank" rel="noreferrer">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank" rel="noreferrer">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <Theme>
+      <Box style={{ background: "var(--gray-a2)", borderRadius: "var(--radius-3)" }}>
+	<Container size="1">
+		<DecorativeBox>
+			<Box py="9" />
+		</DecorativeBox>
+	</Container>
+</Box><
+      {/*
+        The r3f/react-three tree can throw runtime errors (for example
+        when WebGL is unavailable or a component throws during render).
+        Wrap it with an ErrorBoundary so we can show a friendly fallback
+        and avoid unmounting the entire app. See:
+        https://react.dev/link/error-boundaries
+      */}
+      <ErrorBoundary>
+        <R3FView />
+      </ErrorBoundary>
+    </Theme>
   )
 }
 
