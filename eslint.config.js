@@ -44,7 +44,7 @@ export default defineConfig([
       '@typescript-eslint': tsPlugin,
     },
     settings: {
-      react: { version: 'detect' },
+      react: { version: '19.2.0' },
     },
     rules: {
       // merge recommended rules from plugins (apply type-aware configs only for TS)

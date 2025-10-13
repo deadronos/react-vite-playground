@@ -29,18 +29,18 @@ declare module '*.gif' {
 // For CSS/SCSS we export a record of class name -> string. Side-effect imports
 // (e.g. `import './globals.css'`) are also allowed by these declarations.
 declare module '*.css' {
-  const classes: { [key: string]: string };
+  const classes: Record<string, string>;
   export default classes;
 }
 declare module '*.scss' {
-  const classes: { [key: string]: string };
+  const classes: Record<string, string>;
   export default classes;
 }
 declare module '*.module.css' {
-  const classes: { [key: string]: string };
+  const classes: Record<string, string>;
   export default classes;
 }
 declare module '*.module.scss' {
-  const classes: { [key: string]: string };
+  const classes: Record<string, string>;
   export default classes;
 }

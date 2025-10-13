@@ -4,7 +4,7 @@ import { CanvasProvider } from '@triplex/provider';
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei';
 import { PerspectiveCamera } from "@react-three/drei";
-
+import { MeshTransmissionMaterial } from '@react-three/drei';
 
 
 
@@ -24,7 +24,11 @@ function R3FView(): ReactElement {
           </mesh>
           <mesh position={[0, 1.56, 0]}>
             <sphereGeometry />
-            <meshStandardMaterial />
+            <meshStandardMaterial color={"indigo"}/>
+          </mesh>
+          <mesh>
+            <sphereGeometry />
+            <MeshTransmissionMaterial />
           </mesh>
         </>
       </Canvas>

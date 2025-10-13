@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react'
 import * as React from 'react';
 import './App.css'
-import { Theme, ThemePanel, Text, Box, Card, Flex, Grid, Container } from "@radix-ui/themes"
+import { Theme, ThemePanel, Box, Card, Flex, Grid } from "@radix-ui/themes"
 import R3FView from './components/r3fview';
 import { GlobalProvider } from '@triplex/provider';
 import { asChildPropDef } from '@radix-ui/themes/props';
