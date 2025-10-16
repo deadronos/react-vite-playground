@@ -1,10 +1,11 @@
 import type { ReactElement } from 'react'
 import * as React from 'react';
 import './App.css'
-import { Theme, ThemePanel, Box, Card, Flex, Grid } from "@radix-ui/themes"
+import { Theme, ThemePanel, Box, Card, Flex, Grid, Link } from "@radix-ui/themes"
 import R3FView from './components/r3fview';
 import { GlobalProvider } from '@triplex/provider';
 import { asChildPropDef } from '@radix-ui/themes/props';
+import { Container } from 'postcss';
 
 
 
@@ -23,7 +24,9 @@ function App(): ReactElement {
             <Grid align="center" columns="3" gap="3" width="100%" style={{placeItems:'center'}}>
               <Card>
                 <Box gridColumn="1">
-                  1
+                  <Link>
+                    1
+                  </Link>
                 </Box>
               </Card>
               <Card>
@@ -40,7 +43,7 @@ function App(): ReactElement {
           </Flex>
         </Box>
         <Box asChild className="r3fview">
-          <R3FView />
+           <R3FView />
         </Box>
         <Box asChild className="footercontainer">
           <Grid align="center" columns="3" gap="3" width="100%" style={{placeItems:'center'}}>
