@@ -30,7 +30,7 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "files": ["src/env.d.ts", "src/global.d.ts"],
+  "files": ["src/env.d.ts", "src/global.d.ts", "src/components/TransmissionSphere.tsx"],
   "include": ["src"],
   "exclude": ["src/**/*.test.*", "src/**/*.spec.*"]
 }
