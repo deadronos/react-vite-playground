@@ -7,3 +7,6 @@
 
 @import 'tailwindcss/utilities.css' layer(utilities);
 
+body{
+  margin: 0;
+}

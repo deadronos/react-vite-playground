@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
+import React, { useRef, useState } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { MeshTransmissionMaterial, Sphere } from '@react-three/drei';
 import type { Mesh } from 'three';
 
@@ -15,22 +15,40 @@ export default function TransmissionSphere({ speed = 0.5, ...props }: Transmissi
   // ref to the underlying mesh (three.Mesh)
   const meshRef = useRef<Mesh | null>(null);
 
+  const [hovered, hover] = useState(false);
+  const [clicked, click] = useState(false);
+
   // rotate every frame; delta is the seconds elapsed since last frame
   // speed is radians per second, so multiply by delta to get radians to rotate this frame
   useFrame((_, delta) => {
     const mesh = meshRef.current;
     if (!mesh) return;
-    const angle = speed * delta; // radians to rotate this frame
-    // mesh.rotation.y += angle;
+    const angle = speed * delta;
+    mesh.rotation.y += angle;
     mesh.rotation.x += angle;
+    mesh.position.y = 1.18 + Math.sin(_.clock.getElapsedTime()) * 0.5;
   });
 
+
+
   return (
-    <Sphere ref={meshRef} position={[0, 1.18, 0]} scale={[3, 3, 3]} {...props}>
-      <MeshTransmissionMaterial
+    <Sphere
+      onClick={(event) => click(!clicked)}
+      onPointerOver={(event) => (event.stopPropagation(), hover(true))}
+      onPointerOut={(event) => hover(false)}
+      ref={meshRef}
+      position={[0, 1.18, 0]}
+      scale={[3, 3, 3]} {...props}
+
+      >
+      <MeshTransmissionMaterial wireframe={hovered? true:false}
+
+        thickness={0.5}
+        roughness={0.1}
+        ior={1.1}
         color={props.color || 'white'}
         metalness={0.1}
-        reflectivity={0.1}
+        reflectivity={0.9}
         toneMapped={true}
         visible={true}
         depthWrite={true}

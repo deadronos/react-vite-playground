@@ -1,14 +1,15 @@
-import { useRef, type ReactElement } from 'react'
+import { useRef, type ReactElement } from 'react';
 import { CanvasProvider } from '@triplex/provider';
-import { Canvas, useFrame} from '@react-three/fiber'
+import { Canvas, useFrame } from '@react-three/fiber';
 import { Sphere, PerspectiveCamera, OrbitControls } from "@react-three/drei";
 import TransmissionSphere from './TransmissionSphere';
 import type { Mesh } from 'node_modules/@types/three/build/three.d.cts';
+import '../index.css';
+import { materialOpacity } from 'three/tsl';
 
+export default R3FView;
 
-
-
-function R3FView(): ReactElement {
+function R3FView(...props): ReactElement {
 
   type InnerSphereProps = {
     /**
@@ -18,29 +19,35 @@ function R3FView(): ReactElement {
     speed?:number;
   }
 
-
-
-  function InnerSphere({speed=1,...props}:InnerSphereProps){
+    function InnerSphere({speed=1,...props}:InnerSphereProps){
     const innerSpheremeshref=useRef<Mesh|null>();
 
     useFrame((_, delta) => {
+      const time=_.clock.getElapsedTime();
       const mesh=innerSpheremeshref.current;
       if(!mesh) return;
-      const angle=speed*delta;
+      const rot=delta*Math.sin(time)/2*speed;
+      const angle=rot;
+      mesh.rotation.x+=angle;
       mesh.rotation.y+=angle;
+      mesh.rotation.z+=angle;
     });
   return(
-    <Sphere ref={innerSpheremeshref} position={[0,1.56,0]} scale={[2,1,1]} {...props}>
-      <meshStandardMaterial transparent opacity={0.9} color={"indigo"}/>
+    <Sphere ref={innerSpheremeshref} position={[0,1.56,0]} scale={[1,1,1]} {...props}>
+      <meshPhysicalMaterial transparent opacity={0.9} color={"indigo"}/>
     </Sphere>
 
 
   )
   };
 
+
   return (
     <CanvasProvider>
+      <div className='r3f-canvas'>
       <Canvas frameloop='always' shadows className='r3fview'>
+          <axesHelper args={[5]} />
+          <gridHelper args={[20, 20, 0xff22aa, 0x55ccff]} />
           <ambientLight name={"Ambient Light"} color={"#f0f0ff"} intensity={Math.PI/2} position={[0, 4.81, 0]} castShadow={false} />
           <directionalLight name={"Key Light"} position={[1.33, 1.51, 5.59]} intensity={Math.PI} color={"#f0f0ff"} castShadow={true} />
           <pointLight name={"Fill Light"} position={[-2.47, 2.49, -0.16]} rotation={[-1.122659331488609, -0.948099223993744, 1.8730258687794386]} color={"#f0f0ff"} castShadow={true} intensity={Math.PI} />
@@ -49,16 +56,12 @@ function R3FView(): ReactElement {
           <OrbitControls autoRotate={false} enableZoom={false} enableRotate={false} enablePan={false} />
           <mesh>
             <boxGeometry />
-            <meshStandardMaterial color={"#5257ff"} />
+            <meshPhysicalMaterial color={"#5257ff"} />
           </mesh>
           <InnerSphere speed={1.0} />
           <TransmissionSphere speed={0.5} scale={[4,4,4]} />
       </Canvas>
+      </div>
     </CanvasProvider>
   )
 }
-
-export default R3FView;
-
-
-
