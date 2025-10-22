@@ -24,9 +24,13 @@ export default function TransmissionSphere({ speed = 0.5, ...props }: Transmissi
     const mesh = meshRef.current;
     if (!mesh) return;
     const angle = speed * delta;
-    mesh.rotation.y += angle;
-    mesh.rotation.x += angle;
-    mesh.position.y = 1.18 + Math.sin(_.clock.getElapsedTime()) * 0.5;
+    mesh.rotation.y += angle*speed;
+    mesh.rotation.x += angle*speed;
+    mesh.position.y = 1.18 + Math.sin(_.clock.getElapsedTime()*0.25) * 1.5*speed;
+    mesh.position.x = Math.sin(_.clock.getElapsedTime()*0.25) * 1.0*speed;
+    mesh.scale.x=mesh.scale.x*Math.sin(_.clock.getElapsedTime()*11.5)*0.01*speed+4.0;
+    mesh.scale.y=mesh.scale.y*Math.cos(_.clock.getElapsedTime()*4.5)*0.01*speed+4.0;
+    mesh.scale.z=mesh.scale.z*Math.sin(_.clock.getElapsedTime()*6.5)*0.01*speed+4.0;
   });
 
 
@@ -42,13 +46,13 @@ export default function TransmissionSphere({ speed = 0.5, ...props }: Transmissi
 
       >
       <MeshTransmissionMaterial wireframe={hovered? true:false}
-
+        chromaticAberration={clicked?1.0:0.0}
         thickness={0.5}
         roughness={0.1}
         ior={1.1}
         color={props.color || 'white'}
-        metalness={0.1}
-        reflectivity={0.9}
+        metalness={0.2}
+        reflectivity={0.5}
         toneMapped={true}
         visible={true}
         depthWrite={true}
