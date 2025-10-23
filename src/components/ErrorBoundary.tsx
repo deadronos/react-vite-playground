@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import type { ErrorInfo, ReactNode } from 'react';
 import './error-boundary.css';
+import { Html } from '@react-three/drei';
 
 type FallbackRender = (error: Error | null) => ReactNode;
 
@@ -46,11 +47,13 @@ export default class ErrorBoundary extends Component<Props, State> {
 
       // Default fallback UI
       return (
+        <Html>
         <div role="alert" className="error-boundary">
           <h2>Something went wrong</h2>
           <pre className="error-boundary__pre">{this.state.error?.message}</pre>
           <button onClick={() => window.location.reload()}>Reload</button>
         </div>
+        </Html>
       );
     }
 

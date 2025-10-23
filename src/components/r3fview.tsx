@@ -1,10 +1,11 @@
 import { useRef, type ReactElement } from 'react';
-import { CanvasProvider } from '@triplex/provider';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Sphere, PerspectiveCamera, OrbitControls, MeshWobbleMaterial, MeshReflectorMaterial, Edges } from "@react-three/drei";
+
+import { useFrame } from '@react-three/fiber';
+import { Sphere, PerspectiveCamera, OrbitControls, MeshWobbleMaterial, MeshReflectorMaterial, View } from "@react-three/drei";
 import TransmissionSphere from './TransmissionSphere';
 import '../index.css';
 import OrbitingDirectionalLight from './OrbitingDirectionalLight';
+
 
 export default R3FView;
 
@@ -80,11 +81,7 @@ function R3FView(...props): ReactElement {
   }
 
   return (
-    <CanvasProvider>
-      <div className='r3f-canvas'>
-        <Canvas frameloop='always'
-          camera={{ position: [0, 0, 10], fov: 50 }}
-          shadows className='r3fview' webgl={{ antialias: true, powerPreference: "high-performance" }}>
+      <group>
           <axesHelper visible={false} args={[5]} />
           <gridHelper visible={false} opacity={0.1} args={[20, 20, 0xff22aa, 0x55ccff]} />
           <ambientLight name={"Ambient Light"} color={"#f0f0ff"} intensity={Math.PI / 2} position={[0, 4.81, 0]} castShadow={false} />
@@ -159,8 +156,6 @@ function R3FView(...props): ReactElement {
               metalness={0.1}
             />
           </mesh>
-        </Canvas>
-      </div>
-    </CanvasProvider>
+      </group>
   )
 }

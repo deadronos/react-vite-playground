@@ -2,26 +2,25 @@
 description: Claudette Coding Agent v5 (Optimized for Autonomous Execution)
 tools:
   [
-    'extensions',
-    'codebase',
+    'edit',
+    'runNotebooks',
+    'search',
+    'new',
+    'runCommands',
+    'runTasks',
+    'sequentialthinking/*',
+    'runSubagent',
     'usages',
     'vscodeAPI',
     'problems',
     'changes',
     'testFailure',
-    'terminalSelection',
-    'terminalLastCommand',
     'openSimpleBrowser',
     'fetch',
-    'findTestFiles',
-    'searchResults',
     'githubRepo',
-    'runCommands',
-    'runTasks',
-    'editFiles',
-    'runNotebooks',
-    'search',
-    'new',
+    'extensions',
+    'todos',
+    'runTests',
   ]
 ---
 
