@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import useGameStore, { ECS, asteroidsQuery, turretsQuery, projectilesQuery } from '../store/gameStore'
+import useGameStore, { ECS, asteroidsQuery, turretsQuery, projectilesQuery, muzzleFlashesQuery } from '../store/gameStore'
 import * as THREE from 'three'
 
 function colorByBiome(b: string) {
@@ -16,27 +16,45 @@ function colorByBiome(b: string) {
   }
 }
 
-function createDetailedAsteroidGeometry(radius: number, seed: number): THREE.BufferGeometry {
-  const geometry = new THREE.IcosahedronGeometry(radius, 5)
+function createSpaceyAsteroidGeometry(radius: number, seed: number): THREE.BufferGeometry {
+  // Start with a tetrahedron and subdivide heavily for extreme detail
+  const geometry = new THREE.TetrahedronGeometry(radius, 4)
   const positions = geometry.attributes.position.array as Float32Array
 
-  const rng = () => {
-    seed = (seed * 9301 + 49297) % 233280
-    return seed / 233280
+  const seededRandom = (s: number) => {
+    s = Math.sin(s) * 10000
+    return s - Math.floor(s)
   }
 
-  // Multi-scale noise for realistic asteroid detail
+  // Apply aggressive multi-scale noise for dramatic spiky appearance
   for (let i = 0; i < positions.length; i += 3) {
     const x = positions[i]
     const y = positions[i + 1]
     const z = positions[i + 2]
     const len = Math.sqrt(x * x + y * y + z * z)
 
-    // Large scale deformation (main shape)
+    if (len === 0) continue
+
+    const baseSeed = seed + i
+
+    // Aggressive noise with extreme spikes
     let noise = 0
-    noise += rng() * 0.6 - 0.3 // Large craters
-    noise += (rng() * 0.3 - 0.15) * 0.5 // Medium details
-    noise += (rng() * 0.2 - 0.1) * 0.25 // Small surface texture
+
+    // Primary chaos - large jutting spikes
+    noise += (seededRandom(baseSeed * 1.1) * 2 - 1) * 0.8
+
+    // Sharp ridges
+    noise += (seededRandom(baseSeed * 2.3) * 2 - 1) * 0.5
+
+    // Crevasses and sharp details
+    noise += (seededRandom(baseSeed * 3.7) * 2 - 1) * 0.35
+
+    // Micro-texturing for surface detail
+    noise += (seededRandom(baseSeed * 5.2) * 2 - 1) * 0.2
+
+    // Spike generation - create pointed protrusions
+    const spikeStrength = Math.abs(seededRandom(baseSeed * 7.1)) > 0.7 ? 0.6 : 0
+    noise += spikeStrength
 
     const scale = (1 + noise) * radius / len
 
@@ -76,10 +94,11 @@ function AsteroidMesh({ a, geometry }: AsteroidProps) {
     >
       <meshStandardMaterial
         color={colorByBiome(a.biome)}
-        metalness={0.4}
-        roughness={0.85}
-        emissive={'#0a0a0a'}
-        map={null}
+        metalness={0.65}
+        roughness={0.5}
+        emissive={colorByBiome(a.biome)}
+        emissiveIntensity={0.15}
+        envMapIntensity={1.2}
       />
     </mesh>
   )
@@ -117,7 +136,7 @@ export default function GameSystems() {
           let geometry = cache.get(entityId)
           if (!geometry && entityId) {
             const seed = parseInt(entityId, 10) || 0
-            geometry = createDetailedAsteroidGeometry(a.radius ?? 0.4, seed)
+            geometry = createSpaceyAsteroidGeometry(a.radius ?? 0.4, seed)
             cache.set(entityId, geometry)
           }
           return geometry ? <AsteroidMesh a={a} geometry={geometry} /> : null
@@ -159,18 +178,70 @@ export default function GameSystems() {
       </ECS.Entities>
 
       <ECS.Entities in={projectilesQuery}>
-        {(p: any) => (
-          <group key={ECS.world.id(p)} position={[p.position.x, p.position.y, p.position.z]}>
-            <mesh>
-              <octahedronGeometry args={[0.15, 2]} />
-              <meshStandardMaterial emissive={'#ffeb3b'} color={'#ffeb3b'} emissiveIntensity={1} />
-            </mesh>
-            <mesh scale={[2, 2, 2]}>
-              <octahedronGeometry args={[0.15, 2]} />
-              <meshStandardMaterial emissive={'#ff9800'} color={'#ff9800'} transparent opacity={0.3} />
-            </mesh>
-          </group>
-        )}
+        {(p: any) => {
+          const progress = 1 - p.lifetime / 5
+          const trailSegments = 4
+          const trails = []
+          for (let i = 0; i < trailSegments; i++) {
+            const t = (i / trailSegments) * progress
+            trails.push(
+              <mesh key={i} position={[-p.velocity.x * 0.1 * t, -p.velocity.y * 0.1 * t, -p.velocity.z * 0.1 * t]}>
+                <octahedronGeometry args={[0.08, 1]} />
+                <meshStandardMaterial
+                  emissive={'#ffeb3b'}
+                  color={'#ffeb3b'}
+                  emissiveIntensity={0.4 * (1 - t)}
+                  transparent
+                  opacity={0.6 * (1 - t)}
+                />
+              </mesh>,
+            )
+          }
+          return (
+            <group key={ECS.world.id(p)} position={[p.position.x, p.position.y, p.position.z]}>
+              {trails}
+              <mesh>
+                <octahedronGeometry args={[0.2, 2]} />
+                <meshStandardMaterial emissive={'#ffeb3b'} color={'#ffeb3b'} emissiveIntensity={1} />
+              </mesh>
+              <mesh scale={[2.5, 2.5, 2.5]}>
+                <octahedronGeometry args={[0.2, 2]} />
+                <meshStandardMaterial emissive={'#ff9800'} color={'#ff9800'} transparent opacity={0.25} />
+              </mesh>
+            </group>
+          )
+        }}
+      </ECS.Entities>
+
+      <ECS.Entities in={muzzleFlashesQuery}>
+        {(m: any) => {
+          const progress = m.lifetime / 0.15
+          const scale = 1.5 - progress * 1.5
+          return (
+            <group key={ECS.world.id(m)} position={[m.position.x, m.position.y, m.position.z]}>
+              <mesh scale={scale}>
+                <sphereGeometry args={[0.3, 8, 8]} />
+                <meshStandardMaterial
+                  emissive={'#ffeb3b'}
+                  color={'#ffeb3b'}
+                  emissiveIntensity={2}
+                  transparent
+                  opacity={progress}
+                />
+              </mesh>
+              <mesh scale={scale * 0.6}>
+                <sphereGeometry args={[0.3, 8, 8]} />
+                <meshStandardMaterial
+                  emissive={'#ff6a3d'}
+                  color={'#ff6a3d'}
+                  emissiveIntensity={2}
+                  transparent
+                  opacity={progress * 0.8}
+                />
+              </mesh>
+            </group>
+          )
+        }}
       </ECS.Entities>
     </group>
   )
