@@ -2,8 +2,6 @@ export function GlobalProvider({ children }: { children?: React.ReactNode }) {
   return children;
 }
 
-import { Html } from '@react-three/drei';
-
 export function CanvasProvider({ children }: { children?: React.ReactNode }) {
   return children
 }

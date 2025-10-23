@@ -1,7 +1,7 @@
 import { useRef, type ReactElement } from 'react';
-
+import type { Mesh } from 'three';
 import { useFrame } from '@react-three/fiber';
-import { Sphere, PerspectiveCamera, OrbitControls, MeshWobbleMaterial, MeshReflectorMaterial, View } from "@react-three/drei";
+import { Sphere, PerspectiveCamera, OrbitControls, MeshWobbleMaterial, MeshReflectorMaterial } from "@react-three/drei";
 import TransmissionSphere from './TransmissionSphere';
 import '../index.css';
 import OrbitingDirectionalLight from './OrbitingDirectionalLight';
