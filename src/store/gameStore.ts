@@ -16,6 +16,7 @@ type AsteroidEntity = {
 
 type TurretEntity = {
   position: Vec3
+  velocity: Vec3
   cannon: {
     projectileSpeed: number
     damage: number
@@ -34,7 +35,14 @@ type ProjectileEntity = {
   type: 'projectile'
 }
 
-export type GameEntity = AsteroidEntity | TurretEntity | ProjectileEntity | Record<string, any>
+type MuzzleFlashEntity = {
+  position: Vec3
+  direction: Vec3
+  lifetime: number
+  type: 'muzzleFlash'
+}
+
+export type GameEntity = AsteroidEntity | TurretEntity | ProjectileEntity | MuzzleFlashEntity | Record<string, any>
 
 type GameState = {
   world: World<GameEntity>
@@ -55,6 +63,7 @@ const world = ECS.world
 export const asteroidsQuery = world.where((e) => e.type === 'asteroid') as any
 export const turretsQuery = world.where((e) => e.type === 'turret') as any
 export const projectilesQuery = world.where((e) => e.type === 'projectile') as any
+export const muzzleFlashesQuery = world.where((e) => e.type === 'muzzleFlash') as any
 
 export const useGameStore = create<GameState>((set) => {
 
@@ -75,7 +84,7 @@ export const useGameStore = create<GameState>((set) => {
   function spawnTurret(pos: Vec3 = { x: 0, y: 0, z: 0 }, cannon: Partial<TurretEntity['cannon']> = {}) {
     const defaultCannon = { projectileSpeed: 8, damage: 4, cooldown: 0.6, range: 6 }
     const conf = { ...defaultCannon, ...cannon }
-    const entity = world.add({ position: pos, cannon: conf, cooldown: 0, type: 'turret' })
+    const entity = world.add({ position: pos, velocity: { x: 0, y: 0, z: 0 }, cannon: conf, cooldown: 0, type: 'turret' })
     set((s) => ({ tick: s.tick + 1 }))
     return entity
   }
@@ -86,7 +95,26 @@ export const useGameStore = create<GameState>((set) => {
     return entity
   }
 
+  function spawnMuzzleFlash(pos: Vec3, direction: Vec3) {
+    const entity = world.add({ position: { ...pos }, direction: { ...direction }, lifetime: 0.15, type: 'muzzleFlash' })
+    set((s) => ({ tick: s.tick + 1 }))
+    return entity
+  }
+
   function step(dt: number) {
+    // Movement for turrets (recoil)
+    for (const t of turretsQuery) {
+      const entity = t as TurretEntity
+      entity.position.x += entity.velocity.x * dt
+      entity.position.y += entity.velocity.y * dt
+      entity.position.z += entity.velocity.z * dt
+
+      const friction = 0.85
+      entity.velocity.x *= friction
+      entity.velocity.y *= friction
+      entity.velocity.z *= friction
+    }
+
     // Movement for asteroids
     for (const a of asteroidsQuery) {
       const entity = a as AsteroidEntity
@@ -139,6 +167,15 @@ export const useGameStore = create<GameState>((set) => {
       }
     }
 
+    // Decay muzzle flashes
+    for (const m of muzzleFlashesQuery) {
+      const entity = m as MuzzleFlashEntity
+      entity.lifetime -= dt
+      if (entity.lifetime <= 0) {
+        world.remove(entity)
+      }
+    }
+
     // Turret targeting and firing
     for (const t of turretsQuery) {
       const turret = t as TurretEntity
@@ -171,6 +208,13 @@ export const useGameStore = create<GameState>((set) => {
         const vel = { x: (dir.x / len) * turret.cannon.projectileSpeed, y: (dir.y / len) * turret.cannon.projectileSpeed, z: (dir.z / len) * turret.cannon.projectileSpeed }
 
         world.add({ position: { ...turret.position }, velocity: vel, damage: turret.cannon.damage, lifetime: 5, type: 'projectile' })
+        world.add({ position: { ...turret.position }, direction: dir, lifetime: 0.15, type: 'muzzleFlash' })
+
+        // Apply recoil in opposite direction
+        const recoilStrength = 0.8
+        turret.velocity.x -= (dir.x / len) * recoilStrength
+        turret.velocity.y -= (dir.y / len) * recoilStrength
+        turret.velocity.z -= (dir.z / len) * recoilStrength
 
         turret.cooldown = turret.cannon.cooldown
       }
@@ -193,6 +237,7 @@ export const useGameStore = create<GameState>((set) => {
     spawnAsteroid,
     spawnTurret,
     spawnProjectile,
+    spawnMuzzleFlash: spawnMuzzleFlash,
     step,
   }
 })
