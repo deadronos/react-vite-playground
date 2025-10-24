@@ -1,7 +1,7 @@
 import { useRef, type ReactElement } from 'react';
 import './App.css';
 import { Theme, ThemePanel, Box, Card, Flex, Grid, Link } from "@radix-ui/themes";
-import { GlobalProvider } from '@triplex/provider';
+import { GlobalProvider } from '../.triplex/provider';
 import MainScene from './components/mainscene';
 import { Canvas } from '@react-three/fiber';
 
