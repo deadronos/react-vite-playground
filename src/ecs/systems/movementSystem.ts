@@ -1,4 +1,4 @@
-import { type Entity, type World, type Vec3, queries } from "../ecs";
+import { type Entity, type World, type Vec3, queries, world } from "../ecs";
 
 
 /**
@@ -23,11 +23,12 @@ const DEFAULT_BOUNDS = {
 
 const MAX_SPEED=50; // clamp for excessive velocities
 
-export function movementSystem(world: World<Entity>, delta: number, bounds?=DEFAULT_BOUNDS){
-  if (!world||!delta||delta<=0) return;
+export function movementSystem(delta: number, bounds=DEFAULT_BOUNDS){
+  if (delta||delta<=0) return;
+
 
   // Iterate over entities with position and velocity
-  for (const entity of queries.movingEntities) {
+  for (const entity of queries.movingAsteroids) {
     // Check if entity has position and velocity
     if (!entity.position || !entity.velocity) continue;
 
@@ -48,7 +49,7 @@ export function movementSystem(world: World<Entity>, delta: number, bounds?=DEFA
 
     // Integrate position += velocity * delta
     if (entity.previousPosition===undefined){
-      entity.addComponent('previousPosition',{...entity.position});
+      world.addComponent(entity,'previousPosition',{...entity.position});
     }else{
       entity.previousPosition={...entity.position};
     }

@@ -3,6 +3,7 @@ import { Box, CameraControls, Circle, PerspectiveCamera, RenderTexture, RoundedB
 import { useStore } from '@react-three/fiber';
 import ErrorBoundary from './ErrorBoundary';
 import R3FView from './r3fview';
+import { Systems } from './systems';
 
 
 
@@ -79,6 +80,11 @@ function MainScene(): React.ReactElement {
           <meshPhysicalMaterial side={2} color="gray" />
         </Circle>
       </group>
+
+      <Systems />
+      <Turrets />
+      <Asteroids />
+      <Beams />
 
       </ErrorBoundary>
   );

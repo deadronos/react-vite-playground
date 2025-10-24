@@ -1,6 +1,4 @@
 import { type Bucket, World } from 'miniplex';
-import { platform } from 'os';
-import { modelWorldMatrix } from 'three/tsl';
 
 
 export type Vec3 = { x: number; y: number; z: number };
@@ -17,54 +15,93 @@ type Entity = {
   fireRate?:number;
   range?:number;
   targetId?: number;
+  damage?: number;
+  radius?: number;
+  ttl?:number;
+  colliderRadius?: number;
   wasHit?: boolean;
+  wasHitProps?:{damage: number, sourceIds?: number[], time: number },
+  dead?:boolean;
 };
 
 
 const ecs = new World<Entity>();
+export const world=ecs;
 
 export default ecs;
 
 type ecsType = World<Entity>;
-export type { ecsType };
+type worldType= ecsType;
+export type { ecsType, worldType };
 
 export type { Entity };
 export { World };
 
-
-export function create(world:World<Entity>,entity:Entity){
+export function createEntity(entity:Entity):void{
   world.add(entity);
-  const id = world.id(entity);
-  world.addComponent(entity, entity.id,id);
+  const newid = world.id(entity);
+  if (entity.id===undefined){
+    world.addComponent(entity,'id',newid);
+  } else {
+    entity.id=newid;
+  }
 }
 
-export function createAsteroid(position:Vec3, velocity:Vec3, health:number) {
+export function create(entity:Entity):void{
+  createEntity(entity);
+}
+
+world.onEntityAdded.subscribe((entity) => {
+  console.log("A new entity has been spawned:", entity)
+});
+
+world.onEntityRemoved.subscribe((entity) => {
+  console.log("An entity has been removed:", entity)
+});
+
+export function removeEntity(entity:Entity):void{
+  world.remove(entity);
+}
+
+
+export function createAsteroid({ position, velocity, health }: { position: Vec3; velocity: Vec3; health: number; }) {
   const asteroid: Entity = {
     position,
     velocity,
     health,
-    key:'asteroid'
+    key:'asteroid',
+    colliderRadius:1,
   };
 
   return asteroid;
 }
 
-export function createTurret(position:Vec3, cooldown:number):Entity {
+
+export const TURRET_DEFAULT_RANGE=20;
+
+export function createTurret({ position, cooldown }: { position: Vec3; cooldown: number; }):Entity {
   const turret: Entity = {
     position,
     cooldown,
     fireRate: cooldown,
-    range:20,
+    range:TURRET_DEFAULT_RANGE,
+    damage:10,
     key:'turret'
   };
 
   return turret;
 }
 
+export const MAX_BEAM_DISTANCE=100;
+
 export function createBeam(position:Vec3, velocity:Vec3):Entity {
   const beam: Entity = {
     position,
     velocity,
+    damage:10,
+    radius:0.5,
+    colliderRadius:0.5,
+    ttl:MAX_BEAM_DISTANCE,
     key:'beam'
   };
 
@@ -83,10 +120,13 @@ export function createPlatform(position:Vec3):Entity {
 
 
 export const queries = {
-  movingEntities: ecs.with('position','velocity'),
-  turrets:ecs.with('key','position','cooldown').filter(e=>e.key==='turret'),
-  asteroids:ecs.with('key','position','velocity','health').filter(e=>e.key==='asteroid'),
-  platforms:ecs.with('key','position').filter(e=>e.key==='platform'),
-  beams:ecs.with('key','position','velocity').filter(e=>e.key==='beam'),
-  hitEntities:ecs.with('wasHit'),
+  movingEntities: world.with('position','velocity','id'),
+  movingAsteroids: world.with('key','position','velocity','id').where(({key})=>key==='asteroid'),
+  movingBeams: world.with('key','position','velocity','id').where(({key})=>key==='beam'),
+  turrets:world.with('key','position','cooldown').where(({key})=>key==='turret'),
+  asteroids:world.with('key','position','velocity','health','id').where(({key})=>key==='asteroid'),
+  platforms:world.with('key').where(({key})=>key==='platform'),
+  beams:world.with('key','id').where(({key})=>key==='beam'),
+  hitEntities:world.with('wasHit','wasHitProps').where(({wasHit})=>wasHit===true),
+  deadEntities:world.with('dead').where(({dead})=>dead===true),
 }

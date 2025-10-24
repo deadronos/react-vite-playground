@@ -1,5 +1,5 @@
-import { type Entity, type World, createBeam, type ecsType, queries } from "../ecs";
-import { type Vec3 } from "../types";
+import { type Entity, MAX_BEAM_DISTANCE, create, createBeam, queries, removeEntity, world } from "../ecs";
+import { type Vec3 } from "../ecs";
 
 /**
  * Turret System
@@ -34,24 +34,24 @@ function normalize(v:Vec3):Vec3{
   return {x:v.x/len,y:v.y/len,z:v.z/len};
 }
 
-export function turretSystem(world: World<Entity>, delta: number) {
+export function turretSystem(delta: number) {
   if (!world || !delta || delta <= 0) return;
 
   // Snapshot asteroids per tick for selection
-  const asteroids= Array.from(queries.asteroids)||[])as Entity[];
+  const asteroids= Array.from(queries.asteroids)||[] as Entity[];
 
   // extract turrets
-  const turrets:Entity[]=Array.from(queries.turrets)||[])as Entity[];
+  const turrets:Entity[]=Array.from(queries.turrets)||[] as Entity[];
 
-  for (const turret:Entity of turrets) {
+  for (const turret of turrets) {
     if (!turret.position||turret.cooldown===undefined||turret.fireRate===undefined) continue;
 
-    const fireRate=(turret as Entity).fireRate as number;
-    const range=(turret as Entity).range as number;
+    const fireRate=(turret).fireRate;
+    const range=(turret).range!;
     const rangeSq=range*range;
 
     // reduce cooldown
-    (turret as Entity).cooldown=Math.max(0,(turret.cooldown as number??0)-delta);
+    (turret).cooldown=Math.max(0,(turret.cooldown??0)-delta);
 
     // if still cooling down, skip
     if ((turret.cooldown??0)>0) continue;
@@ -60,7 +60,7 @@ export function turretSystem(world: World<Entity>, delta: number) {
     let bestTarget:Entity|null=null;
     let bestDistSq=Number.MAX_VALUE;
 
-    for (const asteroid:Entity of asteroids){
+    for (const asteroid of asteroids) {
       if (!asteroid.position) continue;
 
       // if health is zero or below, skip
@@ -99,24 +99,14 @@ export function turretSystem(world: World<Entity>, delta: number) {
 
       // createBeam from ../ecs spawning uses world.create
       try {
-        if(typeof(world as ecsType).create==='function'){
-          (world as ecsType).create(createBeam(beamPosition, beamVelocity));
-        } else if (typeof (world as ecsType).add==='function'){
-          //fallback if create not available
-          const beamEntity= createBeam(beamPosition, beamVelocity);
-          (world as ecsType).add(beamEntity);
-        } else {
-          // cant spawn - warn
-          console.warn("turretSystem: world has no create or add method to create beam entity");
-        }
-
+          create(createBeam(beamPosition, beamVelocity));
       } catch (e) {
         console.warn("turretSystem: failed to create beam entity", e);
       }
     }
 
     // Reset turret cooldown
-    (turret as Entity).cooldown=fireRate;
+    (turret).cooldown=fireRate;
 
     try {
       turret.targetId=bestTarget?.id??undefined;
@@ -130,4 +120,37 @@ export function turretSystem(world: World<Entity>, delta: number) {
 
     }
   }
+
+  export function movementBeamSystem(delta: number) {
+    if (delta||delta<=0) return;
+    // Iterate over entities with position and velocity
+    for (const entity of queries.movingBeams) {
+      // Check if entity has position and velocity
+      if (!entity.position || !entity.velocity) continue;
+
+      // Check and store previous position
+      if (entity.previousPosition===undefined){
+        world.addComponent(entity,'previousPosition',{...entity.position});
+      }else{
+        entity.previousPosition={...entity.position};
+      }
+
+      // Update position based on velocity
+      entity.position.x += (entity.velocity.x ?? 0) * delta;
+      entity.position.y += (entity.velocity.y ?? 0) * delta;
+      entity.position.z += (entity.velocity.z ?? 0) * delta;
+
+      // Optionally, add logic to remove beams after certain distance or time
+      const distance = Math.sqrt(
+        sqr(entity.position.x) +
+        sqr(entity.position.y) +
+        sqr(entity.position.z)
+      );
+      if (distance > MAX_BEAM_DISTANCE) {
+        removeEntity(entity);
+      }
+    }
+  }
+
+
 

@@ -1,6 +1,6 @@
-import { type Entity, type World } from "../ecs";
+import { type Entity, type World, create, world} from "../ecs";
 import { createAsteroid } from "../ecs";
-import { type Vec3 } from "../types";
+import { type Vec3 } from "../ecs";
 
 // Config
 const SPAWN_INTERVAL = 2; // seconds
@@ -22,7 +22,7 @@ function randomPositionOnCircle(radius:number, center:Vec3):Vec3{
 }
 
 // System function for Spawning Asteroids
-export function spawningSystem(world: World<Entity>, delta: number) {
+export function spawningSystem(delta: number) {
   timeSinceLastSpawn += delta;
   if (timeSinceLastSpawn >= SPAWN_INTERVAL) {
     timeSinceLastSpawn = 0;
@@ -43,11 +43,9 @@ export function spawningSystem(world: World<Entity>, delta: number) {
       z: (dz / length) * ASTEROID_SPEED,
     };
 
-    world.create(createAsteroid(
-      spawnPosition,
-      velocity,
-      ASTEROID_HEALTH.health
-    ));
+
+    create(createAsteroid(
+      { position: spawnPosition, velocity, health: ASTEROID_HEALTH.health }    ));
 
   }
 }
