@@ -3,7 +3,7 @@ import { createAsteroid } from "../ecs";
 import { type Vec3 } from "../types";
 
 // Config
-const SPAWN_INTERVAL = 2000; // milliseconds
+const SPAWN_INTERVAL = 2; // seconds
 const PLATFORM_RADIUS = 10;
 const ASTEROID_SPEED = 2;
 const ASTEROID_HEALTH = { health: 100 };
@@ -30,7 +30,7 @@ export function spawningSystem(world: World<Entity>, delta: number) {
     const center = { x: 0, y: -1, z: 0 }; // Assuming platform is at origin at y = -1
     const spawnHeight =6;
     const spawnCenter = { x: 0, y: center.y+spawnHeight, z: 0 };
-    const spawnPosition = randomPositionOnCircle(PLATFORM_RADIUS, spawnCenter);
+    const spawnPosition:Vec3 = randomPositionOnCircle(PLATFORM_RADIUS, spawnCenter);
 
     // Velocity towards the center
     const dx = center.x - spawnPosition.x;
@@ -43,11 +43,11 @@ export function spawningSystem(world: World<Entity>, delta: number) {
       z: (dz / length) * ASTEROID_SPEED,
     };
 
-    world.createAsteroid(
+    world.create(createAsteroid(
       spawnPosition,
       velocity,
-      ASTEROID_HEALTH
-    );
+      ASTEROID_HEALTH.health
+    ));
 
   }
 }
