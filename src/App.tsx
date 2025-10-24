@@ -12,7 +12,7 @@ import { Canvas } from '@react-three/fiber';
 
 function App(): ReactElement {
 
-  const container =  useRef();
+  const container = useRef<HTMLDivElement>(null);
 
   return (
     <GlobalProvider>

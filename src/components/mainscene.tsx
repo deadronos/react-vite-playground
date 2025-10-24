@@ -1,25 +1,20 @@
-import type * as THREE from 'three';
-import { useFrame, type ReactThreeFiber } from '@react-three/fiber';
 import '../index.css';
-import { Box, CameraControls, Circle, ContactShadows, MeshPortalMaterial, PerspectiveCamera, RenderCubeTexture, RenderTexture, RoundedBox, RoundedBoxGeometry, Stars, useCubeTexture, View } from '@react-three/drei';
+import { Box, CameraControls, Circle, PerspectiveCamera, RenderTexture, RoundedBox, Stars } from '@react-three/drei';
 import { useStore } from '@react-three/fiber';
 import ErrorBoundary from './ErrorBoundary';
 import R3FView from './r3fview';
-import { useRef } from 'react';
-import { createPortal } from 'react-dom';
+import GameSystems from './GameSystems';
 
 
 
 export default MainScene;
 
-function MainScene(...props): ReactThreeFiber.Object3DNode<any, typeof THREE.Object3D> {
+function MainScene(): React.ReactElement {
 
-  const ref = useRef();
-
-  function RootStore(...props) {
+  function RootStore(): null {
     const root = useStore();
 
-    root.subscribe((onchange) => {
+    root.subscribe((): void => {
       const state = root.getState();
       // You can access the current state of the store here
       // For example, log the current camera position
@@ -34,18 +29,17 @@ function MainScene(...props): ReactThreeFiber.Object3DNode<any, typeof THREE.Obj
     return null;
   }
 
-  function RoundedViewBox({ position = [0, 0, 0], args = [1, 1, 1], ...props }) {
-
-
+  function RoundedViewBox({ position = [0, 0, 0], args = [1, 1, 1], ...props }: any) {
     return (
-      <mesh position={[0, 2, 0]} scale={[1, 1, 1]} {...props} >
-        <planeGeometry args={[4, 3]} radius={0.2} smoothness={4} />
-        <meshPhysicalMaterial side={2} >
-          <RenderTexture aspect={512 / 320} attach="map" width={512} height={200} >
-            <PerspectiveCamera makeDefault position={[-0.16, 4.63, 15]} fov={50} rotation={[-0.4918214282273997, 0.24984003412046796, -0.09356690919815536]} scale={[1, 1, 1]} />
-            <R3FView />
-          </RenderTexture>
-        </meshPhysicalMaterial>
+      <mesh position={[0, 2, 0]} scale={[1, 1, 1]} {...props}>
+        <RoundedBox args={[4, 3, 0.1]} radius={0.2} smoothness={4}>
+          <meshPhysicalMaterial side={2}>
+            <RenderTexture attach="map" width={512} height={320}>
+              <PerspectiveCamera makeDefault position={[-0.16, 4.63, 15]} fov={50} rotation={[-0.4918214282273997, 0.24984003412046796, -0.09356690919815536]} scale={[1, 1, 1]} />
+              <R3FView />
+            </RenderTexture>
+          </meshPhysicalMaterial>
+        </RoundedBox>
       </mesh>
     )
   }
@@ -53,9 +47,7 @@ function MainScene(...props): ReactThreeFiber.Object3DNode<any, typeof THREE.Obj
 
   return (
     <ErrorBoundary>
-      <ErrorBoundary>
-        <RootStore {...props} />
-      </ErrorBoundary>
+      <RootStore />
 
       {/* Camera controls */}
       <PerspectiveCamera key="main-camera" makeDefault fov={50} position={[0, 3, 4.127009088949638]} />
@@ -64,7 +56,7 @@ function MainScene(...props): ReactThreeFiber.Object3DNode<any, typeof THREE.Obj
       {/* Lighting setup */}
       <ambientLight intensity={0.5} />
       <color attach="background" args={['#000000']} />
-      <pointLight attach="main-camera" position={[-0.34, 2.73, 3.53]} intensity={1.5} rotation={[0, 0.6632251157578454, 0]} castShadow={true} attach={undefined} />
+      <pointLight position={[-0.34, 2.73, 3.53]} intensity={1.5} rotation={[0, 0.6632251157578454, 0]} castShadow={true} />
 
       {/* Starfield background */}
       <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
@@ -87,6 +79,9 @@ function MainScene(...props): ReactThreeFiber.Object3DNode<any, typeof THREE.Obj
           <meshPhysicalMaterial side={2} color="gray" />
         </Circle>
       </group>
+
+      {/* Game ECS and rendering */}
+      <GameSystems />
 
     </ErrorBoundary>
   );
