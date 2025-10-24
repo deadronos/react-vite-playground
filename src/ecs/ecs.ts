@@ -25,15 +25,17 @@ export type { Entity };
 export { World };
 
 
-export function createAsteroid(position:Vec3,velocity:Vec3, health:number) {
+export function createAsteroid(world: World<Entity>, position:Vec3, velocity:Vec3, health:number) {
   const asteroid: Entity = {
     position,
     velocity,
     health,
-    key:'asteroid'};
+    key:'asteroid'
+  };
 
-    ecs.add(asteroid)
-    ecs.addComponent(asteroid, id, ecs.id(asteroid));
+   world.add(asteroid);
+   const id = world.id(asteroid);
+   world.addComponent(asteroid, asteroid.id,id);
 
   return asteroid;
 }
