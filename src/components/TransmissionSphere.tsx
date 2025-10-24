@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { useFrame } from '@react-three/fiber';
 import { MeshTransmissionMaterial, Sphere } from '@react-three/drei';
 import type { Mesh } from 'three';
 
@@ -37,20 +37,18 @@ export default function TransmissionSphere({ speed = 0.5, ...props }: Transmissi
 
   return (
     <Sphere
-      onClick={(event) => click(!clicked)}
-      onPointerOver={(event) => (event.stopPropagation(), hover(true))}
-      onPointerOut={(event) => hover(false)}
+      onClick={() => click(!clicked)}
+      onPointerOver={() => hover(true)}
+      onPointerOut={() => hover(false)}
       ref={meshRef}
       position={[0, 1.18, 0]}
       scale={[3, 3, 3]} {...props}
-
       >
       <MeshTransmissionMaterial wireframe={hovered? true:false}
         chromaticAberration={clicked?1.0:0.0}
         thickness={0.5}
         roughness={0.1}
         ior={1.1}
-        color={props.color || 'white'}
         metalness={0.2}
         reflectivity={0.5}
         toneMapped={true}

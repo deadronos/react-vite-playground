@@ -22,6 +22,8 @@
     "@tailwindcss/postcss": "^4.1.14",
     "@tailwindcss/vite": "^4.1.14",
     "@types/three": "^0.180.0",
+    "miniplex": "^2.0.0",
+    "miniplex-react": "^2.0.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "render-composer": "^0.2.8",
@@ -30,7 +32,7 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
-    "@eslint/js": "^9.37.0",
+    "@eslint/js": "^9.38.0",
     "@tailwindcss/postcss": "^4.1.14",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
@@ -40,7 +42,7 @@
     "@typescript-eslint/eslint-plugin": "^8.46.0",
     "@typescript-eslint/parser": "^8.46.0",
     "@vitejs/plugin-react": "^5.0.4",
-    "@vitest/coverage-v8": "^3.2.4",
+    "@vitest/coverage-v8": "^4.0.2",
     "autoprefixer": "^10.4.21",
     "babel-plugin-react-compiler": "^1.0.0",
     "coverage-v8": "^0.0.1-security",
@@ -62,11 +64,8 @@
     "sass-embedded": "^1.93.2",
     "stylus": "^0.64.0",
     "typescript": "^5.9.3",
-    "vite": "npm:rolldown-vite@7.1.14",
-    "vitest": "^3.2.4"
-  },
-  "overrides": {
-    "vite": "npm:rolldown-vite@7.1.14"
+    "vite": "^5.4.0",
+    "vitest": "^4.0.2"
   },
   "browserslist": {
     "production": [
