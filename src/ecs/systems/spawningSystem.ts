@@ -1,4 +1,4 @@
-import type {MyWorldType } from "../world";
+import type {MyWorldType } from "../ecs";
 import { createAsteroid } from "../entities";
 import { type Vec3 } from "../types";
 
