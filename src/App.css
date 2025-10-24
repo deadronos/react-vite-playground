@@ -25,6 +25,16 @@
   width: 100%;
 }
 
+.main-scene-container{
+  /* Allow the canvas to take the remaining space. Setting min-height: 0
+     prevents the flex item from overflowing its container which can create
+     scrollbars in some browsers. */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
 .footercontainer{
   background-color: var(--color-gray-900);
   height: 10vh;

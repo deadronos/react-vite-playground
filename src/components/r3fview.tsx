@@ -1,15 +1,16 @@
 import { useRef, type ReactElement } from 'react';
-import { CanvasProvider } from '@triplex/provider';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Sphere, PerspectiveCamera, OrbitControls, MeshWobbleMaterial, MeshReflectorMaterial, Edges } from "@react-three/drei";
+import type { Mesh } from 'three';
+import { useFrame } from '@react-three/fiber';
+import { Sphere, PerspectiveCamera, OrbitControls, MeshWobbleMaterial, MeshReflectorMaterial } from "@react-three/drei";
 import TransmissionSphere from './TransmissionSphere';
 import '../index.css';
 import OrbitingDirectionalLight from './OrbitingDirectionalLight';
 
+
 export default R3FView;
 
 
-function R3FView(...props): ReactElement {
+function R3FView(): ReactElement {
 
   type InnerSphereProps = {
     /**
@@ -20,7 +21,7 @@ function R3FView(...props): ReactElement {
   }
 
   function InnerSphere({ speed = 1, ...props }: InnerSphereProps) {
-    const innerSpheremeshref = useRef<Mesh | null>();
+    const innerSpheremeshref = useRef<Mesh | null>(null);
 
     useFrame((_, delta) => {
       const time = _.clock.getElapsedTime();
@@ -53,9 +54,11 @@ function R3FView(...props): ReactElement {
     y?: number;
     size?: number;
     color?: string;
+    castShadow?: boolean;
+    receiveShadow?: boolean;
   };
 
-  function MovingBox({ speed = 1, radius = 4, y = 1, size = 0.8, color = "#ff6b6b" }: MovingBoxProps) {
+  function MovingBox({ speed = 1, radius = 4, y = 1, size = 0.8, color = "#ff6b6b", castShadow = false, receiveShadow = false }: MovingBoxProps) {
     const ref = useRef<Mesh | null>(null);
 
     useFrame(({ clock }, delta) => {
@@ -64,7 +67,6 @@ function R3FView(...props): ReactElement {
       const z = Math.sin(t) * (radius + Math.cos(t));
 
       if (!ref.current) return;
-      // Move position along circle and add a gentle rotation
       ref.current.position.set(x, y, z);
       ref.current.position.y = y - 1 + Math.sin(t) * 1.5;
       ref.current.rotation.x += delta * 0.5;
@@ -72,7 +74,7 @@ function R3FView(...props): ReactElement {
     });
 
     return (
-      <mesh ref={ref} castShadow receiveShadow>
+      <mesh ref={ref} castShadow={castShadow} receiveShadow={receiveShadow}>
         <boxGeometry args={[size, size, size]} />
         <MeshWobbleMaterial factor={10} speed={speed} color={color} metalness={0.2} roughness={0.4} />
       </mesh>
@@ -80,17 +82,13 @@ function R3FView(...props): ReactElement {
   }
 
   return (
-    <CanvasProvider>
-      <div className='r3f-canvas'>
-        <Canvas frameloop='always'
-          camera={{ position: [0, 0, 10], fov: 50 }}
-          shadows className='r3fview' webgl={{ antialias: true, powerPreference: "high-performance" }}>
+      <group>
           <axesHelper visible={false} args={[5]} />
-          <gridHelper visible={false} opacity={0.1} args={[20, 20, 0xff22aa, 0x55ccff]} />
+          <gridHelper args={[20, 20, 0xff22aa, 0x55ccff]} visible={false} />
           <ambientLight name={"Ambient Light"} color={"#f0f0ff"} intensity={Math.PI / 2} position={[0, 4.81, 0]} castShadow={false} />
-          <directionalLight castShadow name={"Key Light"} position={[1.33, 1.51, 5.59]} intensity={Math.PI} color={"#f0f0ff"} castShadow={true} />
-          <pointLight castShadow name={"Fill Light"} position={[-2.47, 2.49, -0.16]} rotation={[-1.122659331488609, -0.948099223993744, 1.8730258687794386]} color={"#f0f0ff"} castShadow={true} intensity={Math.PI} />
-          <pointLight castShadow name={"Back Light"} position={[-0.09, 1.07, -3.98]} rotation={[-1.122659331488609, -0.948099223993744, 1.8730258687794386]} color={"#f0f0ff"} castShadow={true} intensity={Math.PI} />
+          <directionalLight name={"Key Light"} position={[1.33, 1.51, 5.59]} intensity={Math.PI} color={"#f0f0ff"} castShadow={true} />
+          <pointLight name={"Fill Light"} position={[-2.47, 2.49, -0.16]} rotation={[-1.122659331488609, -0.948099223993744, 1.8730258687794386]} color={"#f0f0ff"} castShadow={true} intensity={Math.PI} />
+          <pointLight name={"Back Light"} position={[-0.09, 1.07, -3.98]} rotation={[-1.122659331488609, -0.948099223993744, 1.8730258687794386]} color={"#f0f0ff"} castShadow={true} intensity={Math.PI} />
           <fog attach="fog" args={["#000011", 1, 100]}/>
           <OrbitingDirectionalLight
             speed={0.05}
@@ -118,16 +116,16 @@ function R3FView(...props): ReactElement {
           />
           <PerspectiveCamera makeDefault position={[-0.16, 4.63, 15]} fov={50} rotation={[-0.4918214282273997, 0.24984003412046796, -0.09356690919815536]} scale={[1, 1, 1]} />
           <OrbitControls autoRotate={false} enableZoom={false} enableRotate={false} enablePan={false} />
-          <MovingBox receiveShadow speed={0.1} radius={6} color={"indigo"} />
-          <MovingBox receiveShadow speed={0.2} radius={6} color={"indigo"} />
-          <MovingBox receiveShadow speed={0.3} radius={6} color={"indigo"} y={3} />
-          <MovingBox receiveShadow speed={0.4} radius={6} color={"indigo"} y={4} />
+          <MovingBox speed={0.1} radius={6} color={"indigo"} castShadow receiveShadow />
+          <MovingBox speed={0.2} radius={6} color={"indigo"} castShadow receiveShadow />
+          <MovingBox speed={0.3} radius={6} color={"indigo"} y={3} castShadow receiveShadow />
+          <MovingBox speed={0.4} radius={6} color={"indigo"} y={4} castShadow receiveShadow />
           <mesh>
             <boxGeometry />
             <meshPhysicalMaterial color={"#5257ff"} />
           </mesh>
           <InnerSphere speed={1.0} />
-          <TransmissionSphere transmissionSampler castShadow receiveShadow speed={0.5} scale={[4, 4, 4]} />
+          <TransmissionSphere speed={0.5} scale={[4, 4, 4]} castShadow receiveShadow />
           <mesh>
             <sphereGeometry args={[50, 64, 64]} />
             <MeshReflectorMaterial
@@ -159,8 +157,6 @@ function R3FView(...props): ReactElement {
               metalness={0.1}
             />
           </mesh>
-        </Canvas>
-      </div>
-    </CanvasProvider>
+      </group>
   )
 }
