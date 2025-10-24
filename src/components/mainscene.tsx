@@ -3,7 +3,7 @@ import { Box, CameraControls, Circle, PerspectiveCamera, RenderTexture, RoundedB
 import { useStore } from '@react-three/fiber';
 import ErrorBoundary from './ErrorBoundary';
 import R3FView from './r3fview';
-import GameSystems from './GameSystems';
+
 
 
 
@@ -80,10 +80,7 @@ function MainScene(): React.ReactElement {
         </Circle>
       </group>
 
-      {/* Game ECS and rendering */}
-      <GameSystems />
-
-    </ErrorBoundary>
+      </ErrorBoundary>
   );
 }
 

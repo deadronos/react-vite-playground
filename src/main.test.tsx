@@ -1,9 +1,20 @@
-import { cleanup, waitFor, screen } from '@testing-library/react';
+import { cleanup, screen } from '@testing-library/react';
 import { act } from 'react';
 import { beforeEach, afterEach, test, expect } from 'vitest';
+// Add jest-dom matchers
+import '@testing-library/jest-dom';
+
+// Polyfill ResizeObserver for the test environment (jsdom doesn't include it)
+if (typeof (globalThis as any).ResizeObserver === 'undefined') {
+  class ResizeObserverPolyfill {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  }
+  ;(globalThis as any).ResizeObserver = ResizeObserverPolyfill
+}
 
 beforeEach(() => {
-  // Ensure a #root element exists before importing main (which mounts into #root)
   const el = document.createElement('div');
   el.id = 'root';
   document.body.appendChild(el);
@@ -16,12 +27,11 @@ afterEach(() => {
 });
 
 test('main mounts App into #root', async () => {
-  // Import the module after the #root exists so it can mount. Wrap in act to
-  // avoid React's warning about state updates not wrapped in act().
   await act(async () => {
     await import('./main');
   });
 
-  // App's heading should be present
-  await waitFor(() => expect(screen.getByText('Vite + React')).toBeTruthy());
+  // Use a resilient, case-insensitive findByText and assert presence
+  const el = await screen.findByText(/Deadronos Collection/i);
+  expect(el).toBeInTheDocument();
 });
