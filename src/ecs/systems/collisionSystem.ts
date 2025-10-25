@@ -1,5 +1,3 @@
-import * as THREE from 'three';
-import type { Entity } from '../ecs';
 import ECS from '../ecs';
 import { queries } from '../ecs';
 
@@ -10,8 +8,8 @@ import { queries } from '../ecs';
 */
 
 
-export function CollisionSystem(delta: number) {
-  const { targets, beams, beamColliders, hitEntities } = queries;
+export function CollisionSystem(_delta: number) {
+  const { targets, beams} = queries;
 
   // Reset wasHit flag for all targetable entities at the start of the frame
   for(const target of targets.entities) {
@@ -35,7 +33,7 @@ export function CollisionSystem(delta: number) {
           target.targetableConfig.wasHit = true;
         }
         // Increase accumulated damage
-        target.targetableConfig.accumulatedDamage=(target.targetableConfig.accumulatedDamage||0)+beamConfig.damage;
+        target.targetableConfig.accumulatedDamage=(target.targetableConfig.accumulatedDamage??0)+beamConfig.damage;
         // Remove the beam entity
         ECS.world.remove(beam);
         break; // Exit the inner loop since the beam is removed

@@ -166,3 +166,33 @@ export function createPlatform(position:THREE.Vector3):Entity {
     rotation: new THREE.Quaternion()
   };
 }
+
+import { create } from 'zustand';
+
+
+export interface GameState {
+  running: boolean;
+  world?: World<Entity>;
+  toggleRunning: () => void;
+  setRunning: (running: boolean) => void;
+  storeECSworld: (world: World<Entity>) => void;
+}
+
+export const useGameStore= create<GameState>()((set)=>({
+  running: true,
+  world: undefined,
+  toggleRunning: ()=> set((state)=> ({running: !state.running})),
+  setRunning: (run:boolean)=> set((_state)=> ({running: run})),
+  storeECSworld:(world: World<Entity>)=> set((_state)=> ({world: world})),
+
+
+}))
+
+export function StoreECS(world: World<Entity>) {
+  const sECS=useGameStore((_state)=>_state.storeECSworld(world));
+
+  return sECS;
+}
+
+
+

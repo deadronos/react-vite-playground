@@ -3,8 +3,7 @@ import { Box, CameraControls, Circle, PerspectiveCamera, RenderTexture, RoundedB
 import { useStore } from '@react-three/fiber';
 import ErrorBoundary from './ErrorBoundary';
 import R3FView from './r3fview';
-import { Systems } from './systems';
-import Turrets from './turrets';
+import React from 'react';
 
 
 
@@ -31,10 +30,10 @@ function MainScene(): React.ReactElement {
     return null;
   }
 
-  function RoundedViewBox({ position = [0, 0, 0], args = [1, 1, 1], ...props }: any) {
+  function RoundedViewBox({ position = [0, 0, 0], args = [1, 1, 1], ...props } ) {
     return (
-      <mesh position={[0, 2, 0]} scale={[1, 1, 1]} {...props}>
-        <RoundedBox args={[4, 3, 0.1]} radius={0.2} smoothness={4}>
+      <mesh position={[position[0],position[1],position[2]]} scale={[1, 1, 1]} {...props}>
+        <RoundedBox args={[args[0], args[1], args[2]]} radius={0.2} smoothness={4}>
           <meshPhysicalMaterial side={2}>
             <RenderTexture attach="map" width={512} height={320}>
               <PerspectiveCamera makeDefault position={[-0.16, 4.63, 15]} fov={50} rotation={[-0.4918214282273997, 0.24984003412046796, -0.09356690919815536]} scale={[1, 1, 1]} />
@@ -74,13 +73,14 @@ function MainScene(): React.ReactElement {
         <meshStandardMaterial color="blue" />
       </RoundedBox>
 
-      <RoundedViewBox />
+      <RoundedViewBox position={[0,2,0]} args={[4, 3, 0.1]} />
 
       <group>
         <Circle name="groundcircle" args={[5, 64]} rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 0]}>
           <meshPhysicalMaterial side={2} color="gray" />
         </Circle>
       </group>
+
 
       {/* <Systems /> */}
       {/* <Turrets /> */}

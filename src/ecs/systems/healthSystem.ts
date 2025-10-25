@@ -1,8 +1,5 @@
-import * as THREE from 'three';
-import type { Entity } from '../ecs';
 import ECS from '../ecs';
 import { queries } from '../ecs';
-import { World } from 'miniplex';
 
 
 
@@ -11,7 +8,7 @@ import { World } from 'miniplex';
 *  This system processes entities that have been hit in the current frame.
 */
 
-export function HealthSystem(delta: number) {
+export function HealthSystem(_delta: number) {
   // query for entities that were hit this frame
   const { hitEntities } = queries;
 
@@ -21,7 +18,7 @@ export function HealthSystem(delta: number) {
     const health = entity.health;
     // Check if components exist
     if(targetableConfig && health) {
-      health.current -= targetableConfig.accumulatedDamage || 0;
+      health.current -= targetableConfig.accumulatedDamage ?? 0;
       // Reset accumulated damage for next frame
       targetableConfig.accumulatedDamage = 0;
 

@@ -13,10 +13,11 @@ export const BEAM_RADIUS= 0.2;
 function square(v:number):number{
   return v*v;
 }
-
+/*
 function distanceSquared(a:THREE.Vector3, b:THREE.Vector3):number{
   return square(a.x - b.x) + square(a.y - b.y) + square(a.z - b.z);
 }
+*/
 
 export function TurretSystem(delta: number) {
 
@@ -70,14 +71,14 @@ export function TurretSystem(delta: number) {
 
     // 3. Aim and fire at target
     if(config.target) {
-      if(!target.position) continue; // target has no position, skip
-      const targetPosition= target.position;
+      if(!target!.position) continue; // target has no position, skip
+      const targetPosition= target!.position;
 
       // use a Matrix4 to make turret "look at" the target
       // Assumption: turret model faces +Z forward
       const lookAtMatrix = new THREE.Matrix4().
-        lookAt(turretPosition,target!.position, THREE.Object3D.DEFAULT_UP);
-      turret.rotation.setFromRotationMatrix(lookAtMatrix);
+        lookAt(turretPosition,targetPosition, THREE.Object3D.DEFAULT_UP);
+      turretRotation.setFromRotationMatrix(lookAtMatrix);
 
       // 4. Fire if ready
       if (config.cooldown <= 0) {

@@ -1,6 +1,5 @@
-import * as THREE from 'three';
 import ECS from '../ecs';
-import { Entity, queries } from '../ecs';
+import { queries } from '../ecs';
 
 
 

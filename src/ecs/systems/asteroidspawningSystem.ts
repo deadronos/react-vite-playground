@@ -1,4 +1,4 @@
-import ECS, { queries, createEntity, createAsteroid } from "../ecs";
+import { queries, createEntity, createAsteroid } from "../ecs";
 import type { Entity } from "../ecs";
 import * as THREE from "three";
 
