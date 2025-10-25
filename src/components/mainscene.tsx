@@ -4,6 +4,7 @@ import { useStore } from '@react-three/fiber';
 import ErrorBoundary from './ErrorBoundary';
 import R3FView from './r3fview';
 import { Systems } from './systems';
+import Turrets from './turrets';
 
 
 
@@ -81,10 +82,10 @@ function MainScene(): React.ReactElement {
         </Circle>
       </group>
 
-      <Systems />
-      <Turrets />
-      <Asteroids />
-      <Beams />
+      {/* <Systems /> */}
+      {/* <Turrets /> */}
+      {/* <Asteroids /> */}
+      {/* <Beams /> */}
 
       </ErrorBoundary>
   );
