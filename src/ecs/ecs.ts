@@ -1,12 +1,13 @@
 import {World} from 'miniplex';
 import CreateReactAPI from 'miniplex-react';
+import { render } from 'sass-embedded';
 import type { Object3D } from 'three';
 import type * as THREE from 'three';
 
 export type Vec3 =[number,number,number];
 
 // Define the component types
-type Entity = {
+export type Entity = {
   // "Tag" components (used for identification)
   platform?: true
   asteroid?: true
@@ -52,5 +53,35 @@ type Entity = {
 
 const world= new World<Entity>();
 
-export const ECS= CreateReactAPI(world);
+const ECS= CreateReactAPI(world);
 
+export default ECS;
+
+
+
+export const queries = {
+
+
+  // Things that move
+  movingEntities: ECS.world.with("position", "velocity","previousPosition"),
+
+  // Asteroid spawning (needs the platform to spawn around)
+  platforms: ECS.world.with("platform", "position"),
+  asteroids: ECS.world.with("asteroid", "position", "velocity", "health"),
+
+  // Turret logic
+  turrets: ECS.world.with("turret", "position", "rotation", "turretConfig"),
+  targets: ECS.world.with("targetable", "position", "health", "targetableConfig"),
+
+  // Beam logic
+  beams: ECS.world.with("beam", "position", "lifespan"),
+  beamColliders: ECS.world.with("beam", "position", "beamConfig"),
+
+  // Targetable entities that can be hit
+  hitEntities: ECS.world.with("targetable", "position", "targetableConfig"),
+  // Dead entities
+  deadEntities: ECS.world.with("dead"),
+
+  // Entities with 3D objects to render
+  renderables: ECS.world.with("object3D"),
+};
