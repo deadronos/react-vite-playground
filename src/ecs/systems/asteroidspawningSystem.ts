@@ -1,10 +1,14 @@
-import ECS, { queries } from "../ecs";
+import ECS, { queries, createEntity, createAsteroid } from "../ecs";
 import type { Entity } from "../ecs";
+import * as THREE from "three";
 
 let spawnTimer = 0;
 const SPAWN_INTERVAL = 2; // seconds
 const SPAWN_MIN_RADIUS = 20;
 const SPAWN_MAX_RADIUS = 50;
+
+const SPAWN_MAX_VELOCITY = 4;
+const SPAWN_MIN_VELOCITY = 1;
 
 const SPAWN_MAX_ASTEROIDS = 20;
 
@@ -27,9 +31,42 @@ export function AsteroidSpawningSystem(delta: number) {
   // 1. Calculate a random spawn position around the platform
   const angle= Math.random() * Math.PI * 2;
   const distance= SPAWN_MIN_RADIUS + Math.random() * (SPAWN_MAX_RADIUS - SPAWN_MIN_RADIUS);
-  const spawnX:number= (platform.position?.x?0 + Math.cos(angle) * distance);
-  const spawnZ:number= (platform.position?.y?0 + Math.sin(angle) * distance)as number;
-  const spawnY:number= (platform.position?.z?0 + (Math.random()-0.5)* 10)as number; // Slight vertical variation
+  const spawnX:number= (platform.position?.x??0) + Math.cos(angle) * distance;
+  const spawnZ:number= (platform.position?.y??0) + Math.sin(angle) * distance;
+  const spawnY:number= (platform.position?.z??0) + (Math.random()-0.5)* 10; // Slight vertical variation
+  const spawnPosition=new THREE.Vector3(spawnX, spawnY, spawnZ);
+
+  // 2. Calculate velocity aiming vaguely toward the platform
+  const velocity= new THREE.Vector3()
+    .subVectors(platform.position??new THREE.Vector3(0,0,0), spawnPosition)
+    .normalize()
+    .multiplyScalar(SPAWN_MIN_VELOCITY+ Math.random() * (SPAWN_MAX_VELOCITY - SPAWN_MIN_VELOCITY));
+
+  velocity.clampLength(SPAWN_MIN_VELOCITY, SPAWN_MAX_VELOCITY);
+
+
+  // 3. Create a new asteroid entity
+  const asteroid: Entity = createEntity(createAsteroid(spawnPosition));
+
+  // Additional initialization can be done here if needed
+  asteroid.asteroid=true;
+  asteroid.targetable=true;
+  asteroid.position=spawnPosition;
+  asteroid.previousPosition=spawnPosition.clone();
+  asteroid.velocity=velocity;
+  asteroid.rotation=new THREE.Quaternion();
+  asteroid.health={ current: 100, max: 100 };
+  asteroid.dead=false;
+  asteroid.targetableConfig={
+    collisionRadius: 1 + Math.random() * 2,
+    wasHit: false,
+    wasHitby: [],
+    accumulatedDamage: 0
+  };
+
+
+
+
 
 
 
