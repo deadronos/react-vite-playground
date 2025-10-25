@@ -84,7 +84,8 @@ export const queries = {
 
   // Targetable entities that can be hit
   hitEntities: ECS.world.with("targetable", "position", "targetableConfig").where(
-    e => (e.targetableConfig?.wasHit ?? false) === true),
+    e => (e.targetableConfig?.wasHit) === true),
+
   // Dead entities
   deadEntities: ECS.world.with("dead"),
 
@@ -148,7 +149,7 @@ export function createTuret(position:THREE.Vector3):Entity {
     turretConfig: {
       fireRate: 1,    // Shots per second
       cooldown: 0,    // Time until next shot
-      range: 30,         // Max targeting range
+      range: 35,         // Max targeting range
       target: null // The current entity being targeted
     }
 

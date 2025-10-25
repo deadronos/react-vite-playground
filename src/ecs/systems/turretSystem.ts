@@ -1,9 +1,13 @@
 import ECS from "../ecs";
 import type { Entity } from "../ecs";
 import { queries } from "../ecs";
-import type * as THREE from "three";
+import * as THREE from "three";
 
 
+export const BEAM_SPEED= 50;
+export const BEAM_TTL= 2;
+export const BEAM_DAMAGE= 25;
+export const BEAM_RADIUS= 0.2;
 
 // Turret System finding targets and firing beams
 function square(v:number):number{
@@ -65,7 +69,62 @@ export function TurretSystem(delta: number) {
     }
 
     // 3. Aim and fire at target
+    if(config.target) {
+      if(!target.position) continue; // target has no position, skip
+      const targetPosition= target.position;
 
+      // use a Matrix4 to make turret "look at" the target
+      // Assumption: turret model faces +Z forward
+      const lookAtMatrix = new THREE.Matrix4().
+        lookAt(turretPosition,target!.position, THREE.Object3D.DEFAULT_UP);
+      turret.rotation.setFromRotationMatrix(lookAtMatrix);
+
+      // 4. Fire if ready
+      if (config.cooldown <= 0) {
+        config.cooldown= 1.0 / config.fireRate;  // reset cooldown
+
+        // Get direction from turret's rotation
+        const direction = new THREE.Vector3(0, 0, 1)
+        .applyQuaternion(turret.rotation)
+        .normalize();
+
+        // Create beam entity
+        const beamPosition = turretPosition.clone().add(direction.clone().multiplyScalar(2)); // start a bit in front of turret
+        const beamVelocity = direction.clone().multiplyScalar(BEAM_SPEED);
+
+        // construct beam entity properties
+        const beamEntity: Entity = {
+          beam: true,
+          position: beamPosition,
+          previousPosition: beamPosition.clone(),
+          velocity: beamVelocity,
+          beamConfig:{
+            ttl: BEAM_TTL,
+            damage: BEAM_DAMAGE,
+            speed: BEAM_SPEED,
+            collisionRadius: BEAM_RADIUS,
+            source: turret
+          }
+        };
+
+        ECS.world.add(beamEntity);
+        beamEntity.id=ECS.world.id(beamEntity);
+
+      }
+    }
   }
+}
 
+
+export function BeamLifespanSystem(delta: number) {
+  const beams: Entity[] = queries.beams.entities as Entity[];
+
+  for (const beam of beams) {
+    if (!beam.beamConfig) continue; // no beamConfig, skip
+    beam.beamConfig.ttl -= delta;  // decrease ttl
+    if (beam.beamConfig.ttl <= 0) {
+      // Remove beam entity
+      ECS.world.remove(beam);
+    }
+  }
 }
