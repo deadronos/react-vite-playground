@@ -1,5 +1,6 @@
 import ECS from '../ecs';
 import { queries } from '../ecs';
+import * as THREE from 'three';
 
 
 /* Collision System: Detects and handles collisions between beams and targetable entities (like asteroids)
@@ -22,24 +23,59 @@ export function CollisionSystem(_delta: number) {
   // Check for collisions between beams and targetable entities
   for(const beam of beams.entities) {
     const beamPos = beam.position;
-    if(!beamPos) continue; // Skip if no position
+    const beamPrev = beam.previousPosition;
+    if(!beamPos || !beamPrev) continue; // Skip if no position data
     const beamConfig=beam.beamConfig;
     if(!beamConfig) continue; // Skip if no beamConfig
 
+    // For fast-moving beams we must test the swept segment between previousPosition -> position
+    // against each target's sphere to avoid tunneling. We'll compute distance from target center
+    // to the segment and compare to combined radius.
     for(const target of targets.entities) {
-      if(beamPos.distanceTo(target.position)<(beamConfig.collisionRadius+(target.targetableConfig?.collisionRadius||0))){
+      if(!target.position) continue;
+      const targetRadius = target.targetableConfig?.collisionRadius ?? 0;
+
+      // compute squared distance from point (target.position) to segment (beamPrev -> beamPos)
+      const segStart = beamPrev;
+      const segEnd = beamPos;
+      const segVec = new THREE.Vector3().subVectors(segEnd, segStart);
+      const ptVec = new THREE.Vector3().subVectors(target.position, segStart);
+      const segLenSq = segVec.lengthSq();
+
+      let t = 0;
+      if (segLenSq > 0) {
+        t = Math.max(0, Math.min(1, ptVec.dot(segVec) / segLenSq));
+      }
+      const closest = new THREE.Vector3().copy(segStart).add(segVec.clone().multiplyScalar(t));
+      const distSq = closest.distanceToSquared(target.position);
+
+      const combined = beamConfig.collisionRadius + targetRadius;
+      if (distSq <= combined * combined) {
         // Collision detected
-        // Mark the target as hit
         if(target.targetableConfig) {
           target.targetableConfig.wasHit = true;
+          target.targetableConfig.accumulatedDamage = (target.targetableConfig.accumulatedDamage ?? 0) + beamConfig.damage;
         }
-        // Increase accumulated damage
-        target.targetableConfig.accumulatedDamage=(target.targetableConfig.accumulatedDamage??0)+beamConfig.damage;
-        // Remove the beam entity
+
+        // Visual debug: log the collision for easier verification in browser console
+        try {
+          console.log('Beam hit target', {
+            beamId: beam.id,
+            targetId: target.id,
+            beamPos: beam.position?.toArray(),
+            targetPos: target.position?.toArray(),
+            damage: beamConfig.damage,
+            remainingTTL: beam.lifespan?.remaining ?? beam.beamConfig?.ttl
+          });
+        } catch {
+          // swallow any logging errors to avoid breaking the game loop
+        }
+
         ECS.world.remove(beam);
-        break; // Exit the inner loop since the beam is removed
+        break;
       }
-    };
+    }
+    ;
   }
 
   // check asterois vs platform collision

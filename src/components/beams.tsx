@@ -1,9 +1,8 @@
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import * as THREE from 'three';
 import ECS, { queries, type Entity } from '@/ecs/ecs';
-import { useRef } from 'react';
+import React, { useRef, forwardRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Line } from 'three';
+// removed unused Line import; we render a cylinder mesh instead
 
 
 
@@ -12,10 +11,9 @@ import { Line } from 'three';
  * We also render a thin line from the source (if available) to the beam position.
  */
 
-function BeamModel() {
-  const meshRef = useRef<THREE.Mesh>(null);
+const BeamModel = forwardRef<THREE.Mesh, {}>(function BeamModel(_props, ref) {
   return (
-    <mesh ref={meshRef}>
+    <mesh ref={ref}>
       <sphereGeometry args={[0.12, 8, 8]} />
       <meshStandardMaterial
         emissive={'#00aaff'}
@@ -26,7 +24,7 @@ function BeamModel() {
       />
     </mesh>
   );
-}
+});
 
 const beams = queries.beams;
 
@@ -38,7 +36,7 @@ const RenderBeams = () => (
 
 function RenderBeam(entity: Entity) {
   const meshRef = useRef<THREE.Mesh>(null);
-  const lineRef = useRef<THREE.Line>(null);
+  const cylinderRef = useRef<THREE.Mesh>(null);
 
   useFrame(() => {
     const mesh = meshRef.current;
@@ -48,35 +46,56 @@ function RenderBeam(entity: Entity) {
     mesh.position.set(entity.position.x, entity.position.y, entity.position.z);
 
     // Update the optional line from source -> beam
-    const line = lineRef.current;
+    const cyl = cylinderRef.current;
     const src = entity.beamConfig?.source?.position;
-    if (line) {
+    if (cyl) {
       if (src && entity.position) {
-        // set line geometry to two points: source and beam
-        const pts = [src.clone(), entity.position.clone()];
-        // setFromPoints will replace the underlying attribute buffer
-        (line.geometry).setFromPoints(pts);
-        line.visible = true;
+        // Build a cylinder that spans from source -> beam position
+        const start = src;
+        const end = entity.position;
+        const dir = new THREE.Vector3().subVectors(end, start);
+        const len = dir.length();
+        if (len > 0.0001) {
+          // midpoint
+          const mid = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
+          cyl.position.copy(mid);
+
+          // orient the cylinder (its local Y axis points up by default)
+          const up = new THREE.Vector3(0, 1, 0);
+          const q = new THREE.Quaternion().setFromUnitVectors(up, dir.clone().normalize());
+          cyl.quaternion.copy(q);
+
+          // scale the cylinder so its height equals the distance
+          // cylinder geometry is created with height = 1, so scale.y = len
+          cyl.scale.set(1, len, 1);
+          cyl.visible = true;
+        } else {
+          cyl.visible = false;
+        }
       } else {
-        line.visible = false;
+        cyl.visible = false;
       }
     }
   });
 
-  // Use a group to position/rotate if needed later; initial position derived from entity
+  // Use a group to hold the beam visuals. We position child meshes directly in world
+  // space in useFrame (mesh and cylinder), so group remains at origin.
   return (
-    <group position={entity.position?.toArray() as [number, number, number]}>
-      <BeamModel />
-      {/* Line from source to beam; material uses additive blending to look like a laser */}
-      <line ref={lineRef}>
-        <bufferGeometry />
-        <lineBasicMaterial
-          color="#00ccff"
-          linewidth={2}
+    <group>
+      <BeamModel ref={meshRef} />
+
+      {/* Cylinder that stretches from turret (source) to current beam position */}
+      <mesh ref={cylinderRef}>
+        {/* height 1 - we'll scale y to the actual distance each frame */}
+        <cylinderGeometry args={[0.06, 0.06, 1, 12]} />
+        <meshStandardMaterial
+          color={'#00ccff'}
+          emissive={'#00ccff'}
+          emissiveIntensity={3}
           transparent={true}
           opacity={0.9}
         />
-      </line>
+      </mesh>
     </group>
   );
 }

@@ -123,10 +123,16 @@ export function BeamLifespanSystem(delta: number) {
   const beams: Entity[] = queries.beams.entities as Entity[];
 
   for (const beam of beams) {
-    if (!beam.beamConfig) continue; // no beamConfig, skip
-    beam.beamConfig.ttl -= delta;  // decrease ttl
-    if (beam.beamConfig.ttl <= 0) {
-      // Remove beam entity
+    // Prefer the lifespan component as the single source of truth for removal
+    if (!beam.lifespan) continue;
+    beam.lifespan.remaining -= delta;
+
+    // Keep beamConfig.ttl in sync for any systems that still read it
+    if (beam.beamConfig) {
+      beam.beamConfig.ttl = beam.lifespan.remaining;
+    }
+
+    if (beam.lifespan.remaining <= 0) {
       ECS.world.remove(beam);
     }
   }
