@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import ECS, { queries, type Entity } from '@/ecs/ecs';
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
+import { Line } from 'three';
 
 
 
