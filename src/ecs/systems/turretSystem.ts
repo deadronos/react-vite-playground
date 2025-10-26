@@ -44,7 +44,7 @@ export function TurretSystem(delta: number) {
     // 2. find new target if needed
     let target:Entity|undefined= undefined;
     // check existing target and not dead
-    if(config.target!==undefined) {
+    if(config.target) {
       if(config.target?.dead!==true) {  // still alive
         target=config.target!;
       } else {
@@ -106,6 +106,7 @@ export function TurretSystem(delta: number) {
             collisionRadius: BEAM_RADIUS,
             source: turret
           },
+          lifespan: { remaining: BEAM_TTL },
           three: undefined
         };
 

@@ -7,6 +7,7 @@ import React from 'react';
 import { Systems } from './systems';
 import Turrets from './turrets';
 import { Asteroids } from './asteroids';
+import { Beams } from './beams';
 import * as THREE from 'three';
 
 
@@ -89,7 +90,7 @@ function MainScene(): React.ReactElement {
       </ErrorBoundary>
       <Turrets />
       <Asteroids />
-      {/* <Beams /> */}
+      <Beams />
 
       </ErrorBoundary>
   );
