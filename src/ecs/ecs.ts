@@ -1,6 +1,5 @@
 import {World} from 'miniplex';
 import CreateReactAPI from 'miniplex-react';
-import type { Object3D } from 'three';
 import  * as THREE from 'three';
 
 export type Vec3 =[number,number,number];
@@ -52,7 +51,7 @@ export type Entity = {
   }
 
   // Reference to the 3D object in the scene
-  object3D?: Object3D
+  three?: THREE.Object3D // Alias for object3D
 }
 
 
@@ -90,7 +89,7 @@ export const queries = {
   deadEntities: ECS.world.with("dead"),
 
   // Entities with 3D objects to render
-  renderables: ECS.world.with("object3D"),
+  renderables: ECS.world.with("three"),
 };
 
 
@@ -133,13 +132,14 @@ export function createAsteroid(position:THREE.Vector3):Entity {
     health: { current: 100, max: 100 },
     targetableConfig: {
       collisionRadius: 1 + Math.random() * 2
-    }
+    },
+    three:undefined
   };
 }
 
 
 
-export function createTuret(position:THREE.Vector3):Entity {
+export function createTurret(position:THREE.Vector3):Entity {
   // initial values, modify in initialSpawn system
 
   return {
@@ -151,8 +151,8 @@ export function createTuret(position:THREE.Vector3):Entity {
       cooldown: 0,    // Time until next shot
       range: 35,         // Max targeting range
       target: null // The current entity being targeted
-    }
-
+    },
+    three: undefined
   };
 }
 
@@ -163,7 +163,8 @@ export function createPlatform(position:THREE.Vector3):Entity {
   return {
     platform: true,
     position: position,
-    rotation: new THREE.Quaternion()
+    rotation: new THREE.Quaternion(),
+    three: undefined
   };
 }
 
@@ -188,11 +189,7 @@ export const useGameStore= create<GameState>()((set)=>({
 
 }))
 
-export function StoreECS(world: World<Entity>) {
-  const sECS=useGameStore((_state)=>_state.storeECSworld(world));
 
-  return sECS;
-}
 
 
 

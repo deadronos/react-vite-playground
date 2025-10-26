@@ -4,7 +4,10 @@ import { useStore } from '@react-three/fiber';
 import ErrorBoundary from './ErrorBoundary';
 import R3FView from './r3fview';
 import React from 'react';
-
+import { Systems } from './systems';
+import Turrets from './turrets';
+import { Asteroids } from './asteroids';
+import * as THREE from 'three';
 
 
 
@@ -34,8 +37,8 @@ function MainScene(): React.ReactElement {
     return (
       <mesh position={[position[0],position[1],position[2]]} scale={[1, 1, 1]} {...props}>
         <RoundedBox args={[args[0], args[1], args[2]]} radius={0.2} smoothness={4}>
-          <meshPhysicalMaterial side={2}>
-            <RenderTexture attach="map" width={512} height={320}>
+          <meshPhysicalMaterial side={2} >
+            <RenderTexture attach="map" wrapS={THREE.RepeatWrapping} wrapT={THREE.RepeatWrapping} width={512} height={512} anisotropy={16} >
               <PerspectiveCamera makeDefault position={[-0.16, 4.63, 15]} fov={50} rotation={[-0.4918214282273997, 0.24984003412046796, -0.09356690919815536]} scale={[1, 1, 1]} />
               <R3FView />
             </RenderTexture>
@@ -81,10 +84,11 @@ function MainScene(): React.ReactElement {
         </Circle>
       </group>
 
-
-      {/* <Systems /> */}
-      {/* <Turrets /> */}
-      {/* <Asteroids /> */}
+      <ErrorBoundary>
+        <Systems />
+      </ErrorBoundary>
+      <Turrets />
+      <Asteroids />
       {/* <Beams /> */}
 
       </ErrorBoundary>

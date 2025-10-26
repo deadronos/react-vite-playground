@@ -8,6 +8,7 @@ import { queries } from '../ecs';
 // and handle simple boundary conditions
 
 export function MovementSystem(delta: number) {
+  //console.log("MovementSystem running with delta:", delta);
   // query all moving entities
   const movingEntities = queries.movingEntities;
 
@@ -21,22 +22,29 @@ export function MovementSystem(delta: number) {
     // Update position based on velocity and delta time
     const deltaVelocity = entity.velocity.clone().multiplyScalar(delta);
     entity.position.add(deltaVelocity);
-    // Update entity in the ECS
-    ECS.world.update(entity);
+
+
 
     // Simple boundary conditions (e.g., wrap around a cube of size 100)
-    const BOUNDARY_SIZE = 100;
-    // Wrap around logic
-    entity.position.x = (entity.position.x + BOUNDARY_SIZE) % BOUNDARY_SIZE;
-    entity.position.y = (entity.position.y + BOUNDARY_SIZE) % BOUNDARY_SIZE;
-    entity.position.z = (entity.position.z + BOUNDARY_SIZE) % BOUNDARY_SIZE;
+    const BOUNDARY_SIZE = 110;
+    const HALF = BOUNDARY_SIZE / 2;
 
-    // Remove if entity is outside boundaries
-    if (entity.position.x < 0 || entity.position.x > BOUNDARY_SIZE ||
-        entity.position.y < 0 || entity.position.y > BOUNDARY_SIZE ||
-        entity.position.z < 0 || entity.position.z > BOUNDARY_SIZE) {
-      ECS.world.remove(entity);
-    }
+    // Wrap each axis into [-HALF, HALF]
+    if (entity.position.x > HALF) entity.position.x -= BOUNDARY_SIZE;
+    if (entity.position.x < -HALF) entity.position.x += BOUNDARY_SIZE;
+
+    if (entity.position.y > HALF) entity.position.y -= BOUNDARY_SIZE;
+    if (entity.position.y < -HALF) entity.position.y += BOUNDARY_SIZE;
+
+    if (entity.position.z > HALF) entity.position.z -= BOUNDARY_SIZE;
+    if (entity.position.z < -HALF) entity.position.z += BOUNDARY_SIZE;
+
+   // Remove if entity is outside boundaries
+   if (entity.position.x < -HALF || entity.position.x > HALF ||
+       entity.position.y < -HALF || entity.position.y > HALF ||
+       entity.position.z < -HALF || entity.position.z > HALF) {
+     ECS.world.remove(entity);
+   }
 
   }
 

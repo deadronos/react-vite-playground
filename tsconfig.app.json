@@ -20,7 +20,9 @@
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
     "noEmit": true,
+
     "jsx": "react-jsx",
+    "jsxImportSource": "@react-three/fiber",
 
     /* Linting */
     "strict": true,

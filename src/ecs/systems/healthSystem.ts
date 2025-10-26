@@ -38,6 +38,7 @@ export function HealthSystem(_delta: number) {
     if(deadEntity.dead===true) {
       // if dead true remove entity from world
       ECS.world.remove(deadEntity)
+      console.log(`Entity ${deadEntity.id} removed from world due to death.`);
     } else {
       // if false remove dead component
       ECS.world.removeComponent(deadEntity, "dead");

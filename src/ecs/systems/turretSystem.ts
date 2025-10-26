@@ -105,7 +105,8 @@ export function TurretSystem(delta: number) {
             speed: BEAM_SPEED,
             collisionRadius: BEAM_RADIUS,
             source: turret
-          }
+          },
+          three: undefined
         };
 
         ECS.world.add(beamEntity);

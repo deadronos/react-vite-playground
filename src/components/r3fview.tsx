@@ -107,7 +107,7 @@ function R3FView(): ReactElement {
             radius={10}
             height={6}
             inclination={Math.PI / 6}
-            color={"ultraviolet"}
+            color={"magenta"}
             intensity={Math.PI}
             castShadow={true}
             shadowMapSize={2048}

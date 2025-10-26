@@ -3,10 +3,10 @@ import { TurretSystem, BeamLifespanSystem } from "@/ecs/systems/turretSystem";
 import { MovementSystem } from "@/ecs/systems/movementSystem";
 import { CollisionSystem } from "@/ecs/systems/collisionSystem";
 import { HealthSystem } from "@/ecs/systems/healthSystem";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import CreateInitialSpawnSystem from "@/ecs/systems/createinitialspawn";
-import ECS from "@/ecs/ecs";
+import ECS, { type Entity } from "@/ecs/ecs";
 
 
 
@@ -24,41 +24,40 @@ function executeSystems(delta:number){
 
 export function Systems() {
 
+  // one-time initialization
+  useEffect(() => {
+    CreateInitialSpawnSystem();
 
+    const onAdd = (e: Entity) => console.log("Entity added", e);
+    const onRemove = (e: Entity) => console.log("Entity removed", e);
 
-  useEffect((()=>{
+    ECS.world.onEntityAdded.subscribe(onAdd);
+    ECS.world.onEntityRemoved.subscribe(onRemove);
 
-    let initialRun=true;
-    // Set up initial state or subscriptions if needed
-    if (initialRun){
-      initialRun=false;
-      CreateInitialSpawnSystem()
-      ECS.world.onEntityAdded.subscribe(()=>{
-        console.log("Entity added")
-      })
+    return () => {
+      // unsubscribe on unmount
+      ECS.world.onEntityAdded.unsubscribe(onAdd);
+      ECS.world.onEntityRemoved.unsubscribe(onRemove);
+    };
+  }, []); // <- run once
 
-      ECS.world.onEntityRemoved.subscribe(()=>{
-        console.log("Entity removed")
-      })
+  const accumulatorRef = useRef(0); // seconds
 
-    } else {
-      // Subsequent runs can go here if needed
+  useFrame((_, delta) => {
+    const dt = 1 / 60; // fixed timestep in seconds
+    accumulatorRef.current += delta;
+
+    // run systems in fixed steps while we have accumulated time
+    while (accumulatorRef.current >= dt) {
+      executeSystems(dt);
+      accumulatorRef.current -= dt;
     }
 
-    return ()=>{
-      // Clean up subscriptions or state if needed
-    };
-  }));
-
-  useFrame((_,delta)=>{
-    // const currentTime = performance.now();
-    // const frameDelta = (currentTime - lastTime) / 1000; // convert to seconds
-
-
-    executeSystems(delta);
-  },);
+    // optional: lightweight debug per real frame (not per fixed step)
+    // console.log(`Frame: delta=${delta.toFixed(4)}s, acc=${accumulatorRef.current.toFixed(4)}s`);
+  });
 
   return (
-    null
+    <></>
   );
 }

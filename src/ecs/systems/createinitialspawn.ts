@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import ECS, { createEntity, createPlatform, createTuret, StoreECS } from '../ecs';
+import ECS, { createEntity, createPlatform, createTurret } from '../ecs';
 import { queries } from '../ecs';
 
 
@@ -10,8 +10,8 @@ import { queries } from '../ecs';
 
 export default function CreateInitialSpawnSystem() {
   const { platforms } = queries;
-  // let platform:Entity|undefined=undefined;
-  StoreECS(ECS.world);
+
+
 
   // Check if there are already turrets and asteroids spawned
   const existingTurrets = ECS.world.with("turret").entities;
@@ -23,8 +23,8 @@ export default function CreateInitialSpawnSystem() {
   }
   // spawn 2 turrets if none exist on either side of the platform
   if (existingTurrets.length === 0) {
-    createEntity(createTuret(new THREE.Vector3(-5, -1, 0)));
-    createEntity(createTuret(new THREE.Vector3(5, -1, 0)));
+    createEntity(createTurret(new THREE.Vector3(-5, -0.5, 0)));
+    createEntity(createTurret(new THREE.Vector3(5, -0.5, 0)));
   }
 
   console.log('Initial spawn system executed. Turrets and platform created.');
