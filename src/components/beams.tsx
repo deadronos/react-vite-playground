@@ -1,4 +1,3 @@
-/** @jsxImportSource @react-three/fiber */
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import * as THREE from 'three';
 import ECS, { queries, type Entity } from '@/ecs/ecs';

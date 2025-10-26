@@ -1,8 +1,6 @@
 {
   "files": [],
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "@react-three/fiber",
     "strict": true,
     "forceConsistentCasingInFileNames": true
   },
