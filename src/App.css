@@ -1,0 +1,48 @@
+:root {
+  --header-height: 64px;
+  --footer-height: 64px;
+}
+
+.HeaderBar {
+  position: fixed;
+  top: 0;
+  height: var(--header-height);
+  width: 100%;
+  z-index: 10;
+  align-items: center;
+  align-content: center;
+}
+
+.HeaderBar .headerColumn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.ContentArea {
+  position:absolute;
+  top: var(--header-height);
+  bottom: var(--footer-height);
+  left: 0;
+  right: 0;
+  overflow: auto; /* Enable scrolling if content overflows */
+  box-sizing: border-box; /* Include padding and border in element's total width and height */
+}
+
+.FooterBar {
+  position: fixed;
+  bottom: 0;
+  height: var(--footer-height);
+  width: 100%;
+  z-index: 10;
+  align-items: center;
+  align-content: center;
+}
+
+.FooterBar .footerColumn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
