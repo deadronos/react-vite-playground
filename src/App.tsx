@@ -13,11 +13,15 @@ function App(): ReactElement {
   return (
     <Theme appearance={'dark'} hasBackground={true} accentColor={'indigo'}>
       <Container width="100vw" height="100vh">
-        <HeaderBar className='HeaderBar'/>
+        <div className='HeaderBar'>
+          <HeaderBar className='HeaderBar'/>
+        </div>
         <div className='ContentArea'>
           <ContentArea />
         </div>
-        <FooterBar className='FooterBar'/>
+        <div>
+          <FooterBar className='FooterBar'/>
+        </div>
       </Container>
       <ThemePanel defaultOpen={false}/>
     </Theme>

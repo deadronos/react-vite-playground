@@ -1,0 +1,74 @@
+/* Styles for HomeView grid to keep cells fixed-size derived from container */
+
+/* Adjust this to match the number of columns in the grid */
+:root {
+  /* fallback/default columns if not set on container */
+  --home-grid-cols: 8;
+  /* gap between cells (applies as table border-spacing) */
+  --home-grid-gap: 10px;
+  /* minimum and maximum card height */
+  --home-card-min-h: 40px;
+  --home-card-max-h: 120px;
+}
+
+/* Target the element wrapping your rows (class used in contentarea.tsx) */
+.HomeViewGrid {
+  width: 100%;
+  /* make table columns evenly sized, independent of cell content */
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: var(--home-grid-gap);
+  /* expose the number of columns to children */
+  --cols: var(--home-grid-cols);
+}
+
+/* Ensure each table-cell takes an equal portion of the table width */
+.HomeViewGridRow > .HomeViewGridCell,
+.HomeViewGridRow > td,
+.HomeViewGridCell {
+  /* enforce equal column width: 100% / cols */
+  width: calc(100% / var(--cols));
+  padding: 0; /* we'll control spacing with border-spacing */
+  box-sizing: border-box;
+}
+
+/* Card inside cell - make it fill the column width, and have fixed height (derived) */
+.HomeViewGridCellCard {
+  width: 80%;
+  /* compute a card height from the container width -> keeps it responsive
+     You can tweak the multiplier (0.6) depending on desired height/shape.
+     This uses the column width indirectly because table-layout:fixed divides width. */
+  height: clamp(var(--home-card-min-h), calc((100% / var(--cols)) * 0.6), var(--home-card-max-h));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  white-space: nowrap; /* prevents text from wrapping and changing height */
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+  padding: 0.5rem; /* adjust for internal spacing */
+  font-variant-numeric: tabular-nums; /* use fixed-width digits if numbers used */
+}
+
+/* Optional: center single characters visually and avoid shifts from font metrics */
+.HomeViewGridCellCard > * {
+  display: inline-block;
+  line-height: 1;
+  transform: translateZ(0); /* sometimes helps rendering consistency */
+  font-size: 1rem; /* set a stable font-size */
+  text-align: center;
+}
+
+/* If you prefer square cells, you can use aspect-ratio instead:
+   .HomeViewGridCellCard { aspect-ratio: 1 / 1; height: auto; }
+   But aspect-ratio + table-layout mixed can behave differently across browsers.
+*/
+
+/* For smaller screens, reduce cols and card size */
+@media (max-width: 900px) {
+  .HomeViewGrid { --cols: 6; }
+}
+@media (max-width: 600px) {
+  .HomeViewGrid { --cols: 4; }
+  .HomeViewGridCellCard { padding: 0.25rem; font-size: 0.9rem; }
+}

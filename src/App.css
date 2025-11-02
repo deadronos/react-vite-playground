@@ -6,11 +6,13 @@
 .HeaderBar {
   position: fixed;
   top: 0;
+  left: 0;
   height: var(--header-height);
-  width: 100%;
+  width: 100vw;;
   z-index: 10;
   align-items: center;
   align-content: center;
+  padding: 10px;
 }
 
 .HeaderBar .headerColumn {
@@ -26,18 +28,21 @@
   bottom: var(--footer-height);
   left: 0;
   right: 0;
-  overflow: auto; /* Enable scrolling if content overflows */
+  overflow: hidden; /* Enable scrolling if content overflows */
   box-sizing: border-box; /* Include padding and border in element's total width and height */
+  padding: 10px;
 }
 
 .FooterBar {
   position: fixed;
   bottom: 0;
+  left: 0;
   height: var(--footer-height);
-  width: 100%;
+  width: 100vw;
   z-index: 10;
   align-items: center;
   align-content: center;
+  padding: 10px;
 }
 
 .FooterBar .footerColumn {
@@ -46,3 +51,5 @@
   align-items: center;
   height: 100%;
 }
+
+/* Additional global styles can be added here */
