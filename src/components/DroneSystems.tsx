@@ -1,6 +1,11 @@
 import { useFrame } from '@react-three/fiber';
 import { useEffect } from 'react';
 import { InitializeSystem, DeinitializeSystem } from '../ecs/systems/initialize';
+import { CheckMessagePendingSystem } from '@/ecs/systems/checkMessagePending';
+import { MovementSystem } from '@/ecs/systems/movementDrones';
+import { CheckLoadRadiusSystem } from '@/ecs/systems/checkLoadRadius';
+import { ActionTimerSystem } from '@/ecs/systems/actionTimer';
+import { ReturnCompletionSystem } from '@/ecs/systems/returnCompletion';
 
 
 
@@ -10,18 +15,20 @@ import { InitializeSystem, DeinitializeSystem } from '../ecs/systems/initialize'
 export default function DroneSystems(){
 
   useEffect(()=>{
-    // Initialize ECS systems here if needed
-    InitializeSystem();
+    // Initialize and store cleanup function
+    const cleanup = InitializeSystem();
 
-    return ()=>{
-      // Cleanup ECS systems here if needed
-      DeinitializeSystem();
-    };
-  },[]); // run only once on mount
+    // return stored cleanup function
+    return cleanup;
+  },[]);
 
   useFrame((_,dt)=>{
     // Drive ecs systems here per frame
-
+    CheckMessagePendingSystem();
+    MovementSystem(dt);
+    CheckLoadRadiusSystem(dt);
+    ActionTimerSystem(dt);
+    ReturnCompletionSystem(dt);
 
   });
 

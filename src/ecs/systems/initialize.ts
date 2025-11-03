@@ -1,9 +1,12 @@
-import ECS,{ world,addBuildingEntity, addDroneEntity, type ECSWorldType } from "../world"
+import ECS,{ world,addBuildingEntity, addDroneEntity, type ECSWorldType, resetWorld } from "../world"
 import {Vector3} from "three"
 
 
 
-
+/**
+ * Initialize the ECS world with default entities.
+ * @returns DeinitializeSystem for cleanup
+ */
 
 export const InitializeSystem = () => {
   // Initialization logic can be added here if needed
@@ -14,20 +17,18 @@ export const InitializeSystem = () => {
     console.debug("Added initial building entities at (-10,0,0) and (10,0,0)");
 
     console.debug("Initialization system executed.");
-  return () => {
-    DeinitializeSystem();
 
-  };
+    // Return cleanup function
+  return DeinitializeSystem;
 };
 
 
 export default InitializeSystem;
 
 export const DeinitializeSystem = () => {
-  return () => {
-    // Cleanup logic can be added here if needed
-    world.clear();
-
-    console.debug("Deinitialization system executed.");
-  };
+  // Replace with a fresh world instance for cleanup
+  const prevCount = (world as any)?.entities?.length ?? 0;
+  console.debug(`Deinitializing world. Previous world had ~${prevCount} entities (approx).`);
+  resetWorld();
+  console.debug("Deinitialization system executed and world reset.");
 }
