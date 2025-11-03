@@ -8,6 +8,11 @@ type UIStore = {
   toggleDarkMode: () => void;
   toggleSidebar: () => void;
   setActiveView: (view: "home" | "settings" | "profile" | null) => void;
+  home:{
+    paused: boolean;
+    setPaused: (paused: boolean) => void;
+    togglePaused: () => void;
+  }
 };
 
 export const useUIStore = create<UIStore>((set) => ({
@@ -18,4 +23,9 @@ export const useUIStore = create<UIStore>((set) => ({
   toggleDarkMode: () => set((state) => ({ darkMode: !state.darkMode })),
   toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
   setActiveView: (view) => set({ activeView: view }),
+  home: {
+    paused: false,
+    setPaused: (paused) => set((state) => ({ home: { ...state.home, paused } })),
+    togglePaused: () => set((state) => ({ home: { ...state.home, paused: !state.home.paused } })),
+  },
 }));
