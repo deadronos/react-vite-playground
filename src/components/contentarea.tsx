@@ -3,6 +3,8 @@ import React, { useEffect, type ReactElement } from 'react';
 import { Button, Table, Card, ScrollArea } from '@radix-ui/themes';
 import { useGridStore } from '@/store/gridStore';
 import './contentarea.css';
+import { Canvas } from '@react-three/fiber';
+import DroneSystems from './DroneSystems';
 
 
 function HomeView(){
@@ -77,7 +79,20 @@ function HomeView(){
 
 
 function SettingsView(){
-  return <div><h2>Settings View</h2><p>Here you can change your settings.</p></div>;
+  return (
+    <>
+      <div><h2>Settings View</h2><p>Adjust your settings here.</p></div>
+      <Canvas style={{width: '100%', height: '300px', backgroundColor: '#222'}}>
+        <ambientLight intensity={0.5} />
+        <pointLight position={[10, 10, 10]} />
+        <mesh position={[0,2,0]}>
+          <tetrahedronGeometry args={[1, 1, 1]} />
+          <meshStandardMaterial color='orange' />
+        </mesh>
+        <DroneSystems />
+      </Canvas>
+    </>
+  )
 }
 
 function ProfileView(){
@@ -102,6 +117,7 @@ function ContentArea(props?: React.HTMLProps<HTMLDivElement>) {
             <Table.Row>
               <Table.Cell><p>This is the main content area.</p></Table.Cell>
               <Table.Cell><p>It can contain various elements.</p></Table.Cell>
+              <Table.Cell><p>Use the buttons below to switch views.</p></Table.Cell>
             </Table.Row>
           </Table.Header>
           <Table.Body>

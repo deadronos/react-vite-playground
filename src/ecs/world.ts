@@ -1,5 +1,6 @@
 import {World} from 'miniplex'
-import createReactAPI, * as Miniplex from 'miniplex-react'
+import type * as Miniplex from 'miniplex-react';
+import createReactAPI from 'miniplex-react'
 import * as THREE from 'three'
 
 type Vector3=THREE.Vector3
@@ -15,6 +16,8 @@ export type Entity = {
   loadRadius?: number;
   targetPosition?: Vector3;
   targetEntityId?: number|null;
+  dronestate?: 'idle'|'toPickup'|'toDeliver'|'returning';
+  returnPosition?: Vector3;
   MessageLog?: Message[]|null;
   MessagePending?: Message|null;
   MessageCarrying? : Message|null;
@@ -28,12 +31,14 @@ export type Message = {
 }
 
 console.debug("Initializing ECS World");
-const world= new World<Entity>();
+export const world: World<Entity>= new World<Entity>();
 console.debug("ECS World initialized");
 
 export type ECSWorldType = typeof world;
 
-const ECS =createReactAPI(world);
+export type ECSAPIType = Miniplex.ReactAPI<Entity, ECSWorldType>;
+
+const ECS: ECSAPIType = createReactAPI(world);
 
 export default ECS;
 
@@ -86,6 +91,9 @@ export function addDroneEntity(position?:Vector3): Entity {
     isdrone:true,
     position: position ?? new THREE.Vector3().set(0, 0, 0),
     velocity: new THREE.Vector3().set(0, 0, 0),
+    speed: 1, // units per second
+    dronestate: 'idle',
+    returnPosition: position ?? new THREE.Vector3().set(0, 0, 0),
   };
   world.add(newEntity);
   newEntity.id=world.id(newEntity)??-1;
