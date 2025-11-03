@@ -1,3 +1,4 @@
+import React from 'react';
 import * as RC from 'render-composer'
 
 
