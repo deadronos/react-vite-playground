@@ -1,4 +1,4 @@
-import { queries } from "../world";
+import { queries, world } from "../world";
 
 
 /*
@@ -59,14 +59,17 @@ export function CheckMessagePendingSystem(){
   const idleDrone= idleDrones.first;
   if(!idleDrone) return console.debug("No idle drones available"); // no idle drones
 
-  // assign drone to building
-  if(!idleDrone.returnPosition){
+
+  // Ensure returnPosition is set
+  if(idleDrone.returnPosition===undefined){
+    world.addComponent(idleDrone,'returnPosition',idleDrone.position.clone()??new THREE.Vector3(0,0,0));
     idleDrone.returnPosition= idleDrone.position.clone();
     console.debug(`Set return position for drone ${idleDrone.id}.`);
   } else {
     idleDrone.returnPosition= idleDrone.position.clone(); // update return position to current
     console.debug(`Updated return position for drone ${idleDrone.id}.`);
   }
+   // assign drone to building
   idleDrone.targetEntityId= pendingBuilding.id;
   idleDrone.targetPosition= pendingBuilding.position;
   idleDrone.dronestate= 'movingToPickup';
@@ -74,6 +77,6 @@ export function CheckMessagePendingSystem(){
   idleDrone.velocity= new THREE.Vector3(0,0,0); // reset velocity
   console.debug(`Assigned drone ${idleDrone.id} to building ${pendingBuilding.id} for message pickup.`);
 
-  // Ensure returnPosition is set
+
 
 }

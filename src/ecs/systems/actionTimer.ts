@@ -1,4 +1,5 @@
-import { ECS } from '../world';
+import { Vector3 } from 'three';
+import { ECS, world } from '../world';
 import { queries } from '../world';
 import type { Entity } from '../world';
 
@@ -50,21 +51,48 @@ export function ActionTimerSystem(dt: number): void {
       if (drone.dronestate === 'loading') {
         console.debug(`Drone ${drone.id} completed loading.`);
         // find target building
+
         if (drone.targetEntityId !== undefined && drone.targetEntityId !== null) {
-          const building = ECS.world.find(e => e.id === drone.targetEntityId && e.isBuilding);
+          const building = world.entity(drone.targetEntityId);
           if (building?.MessagePending) {
             // transfer message from building to drone
             drone.MessageCarrying = building.MessagePending;
-            building.removeComponent('MessagePending');
+            console.debug(`Drone ${drone.id} loaded message:`, drone.MessageCarrying);
+            // remove MessagePending from building
+            world.removeComponent(building, "MessagePending");
             // set drone state to movingToDropoff
             drone.dronestate = 'movingToDropoff';
             // clear actionTimer
             drone.actionTimer = 0;
-            drone.targetPosition = drone.MessageCarrying.toEntityId !== undefined && drone.MessageCarrying.toEntityId !== null
-              ? ECS.world.find(e => e.id === drone.MessageCarrying.toEntityId)?.position || null
-              : null;
-            drone.targetEntityId = drone.MessageCarrying.toEntityId !== undefined ? drone.MessageCarrying.toEntityId : null;
+            drone.targetEntityId=drone.MessageCarrying?.toEntityId??null;
+            if (drone.targetEntityId !== null) {
+              drone.targetPosition=world?.entity(drone.targetEntityId)?.position??undefined;
+              console.debug(`Drone ${drone.id} targetPosition set to dropoff entity ${drone.targetEntityId}.`);
+              if (drone.targetPosition === undefined) {
+                console.warn(`Drone ${drone.id} targetPosition for dropoff is undefined, target entity ${drone.targetEntityId} not found, returning`);
+                drone.dronestate = 'returning';
+                drone.targetPosition = drone.returnPosition ?? new Vector3(0,0,0);
+                drone.targetEntityId = null;
+                drone.lastStateChangedAt = Date.now();
+                return;
+              }
+              console.debug(`Drone ${drone.id} loaded message, heading to dropoff at entity ${drone.targetEntityId}.`);
+            } else {
+              console.warn(`Drone ${drone.id} has no valid targetEntityId from MessageCarrying, returning`);
+              drone.dronestate = 'returning';
+              drone.targetPosition = drone.returnPosition ?? new Vector3(0,0,0);
+              drone.targetEntityId = null;
+              return;
+            }
             drone.lastStateChangedAt = Date.now();
+          } else {
+            console.warn(`Drone ${drone.id} loading completed but no MessagePending found on building ${drone.targetEntityId}, returning`);
+            drone.dronestate = 'returning';
+            drone.actionTimer = 0;
+            drone.targetPosition = drone.returnPosition ?? new Vector3(0,0,0);
+            drone.targetEntityId = null;
+            drone.lastStateChangedAt = Date.now();
+            return;
           }
         }
       }

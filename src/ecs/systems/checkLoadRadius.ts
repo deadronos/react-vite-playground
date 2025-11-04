@@ -1,6 +1,7 @@
 import { ECS, world } from '../world';
 import { queries } from '../world';
 import type { Entity } from '../world';
+import * as THREE from 'three';
 
 
 /*
@@ -56,12 +57,14 @@ export function CheckLoadRadiusSystem(dt: number): void {
         if (drone.dronestate === 'movingToPickup') {
           console.debug(`Drone ${drone.id} starting to load at Building ${building.id}.`);
           drone.dronestate = 'loading';
+          drone.velocity = new THREE.Vector3(0, 0, 0); // stop movement
           drone.actionTimer = 1; // e.g., 3 seconds to load
           drone.lastStateChangedAt = Date.now();
           world.reindex(drone); // ensure ECS knows about the change
         } else if (drone.dronestate === 'movingToDropoff') {
           console.debug(`Drone ${drone.id} starting to unload at Building ${building.id}.`);
           drone.dronestate = 'unloading';
+          drone.velocity = new THREE.Vector3(0, 0, 0); // stop movement
           drone.actionTimer = 1; // e.g., 3 seconds to unload
           drone.lastStateChangedAt = Date.now();
           world.reindex(drone); // ensure ECS knows about the change
