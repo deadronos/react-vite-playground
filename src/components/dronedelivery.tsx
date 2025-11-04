@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import ECS, {queries, world, type ECSAPIType, type Entity} from '@/ecs/world';
 import React from 'react';
+import { ref } from 'process';
 
 interface MeshProps {
   entity: Entity;
@@ -10,7 +11,7 @@ interface MeshProps {
   meshRef: React.Ref<THREE.Mesh>;
 }
 
-function DroneMesh({entity:Entity, meshRef}: MeshProps) {
+function DroneMesh({entity, meshRef}: MeshProps) {
   // Simple representation of a drone as a box
   return (
     <mesh ref={meshRef}>
@@ -20,12 +21,12 @@ function DroneMesh({entity:Entity, meshRef}: MeshProps) {
   );
 }
 
-function BuildingMesh({entity: Entity, meshRef}: MeshProps) {
+function BuildingMesh({entity, meshRef}: MeshProps) {
   // Simple representation of a building as a box
   return (
     <mesh ref={meshRef}>
       <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color="gray" />
+      <meshStandardMaterial color="blue" />
     </mesh>
   );
 }
@@ -40,17 +41,23 @@ export default function DroneDelivery() {
 
   useEffect(() => {
     const droneSubscription  = queries.drones().onEntityAdded.subscribe((drone)=>{
+      console.debug("DroneDelivery detected new drone entity:", drone);
       setDrones((prev) => [...prev, drone]);
+      droneRefs.current.set(drone.id, React.createRef<THREE.Mesh>());
     });
     const buildingSubscription = queries.buildings().onEntityAdded.subscribe((building)=>{
+      console.debug("DroneDelivery detected new building entity:", building);
       setBuildings((prev) => [...prev, building]);
+      buildingRefs.current.set(building.id, React.createRef<THREE.Mesh>());
     });
 
     const droneRemovedSubscription = queries.drones().onEntityRemoved.subscribe((drone)=>{
       setDrones((prev) => prev.filter(d => d.id !== drone.id));
+      droneRefs.current.delete(drone.id);
     });
     const buildingRemovedSubscription = queries.buildings().onEntityRemoved.subscribe((building)=>{
       setBuildings((prev) => prev.filter(b => b.id !== building.id));
+      buildingRefs.current.delete(building.id);
     });
 
     console.debug("DroneDelivery mounted, subscribing to ECS entity changes.");
@@ -71,17 +78,20 @@ export default function DroneDelivery() {
   useFrame((_, dt)=>{
     // Sync entity positions
     for(const drone of drones){
+      // Get the mesh reference for the drone
       const meshRef = droneRefs.current.get(drone.id);
+
       if(meshRef?.current){
-        const position = ECS.getComponent(drone, 'Position');
+        const position = drone.position;
         meshRef.current.position.set(position.x, position.y, position.z);
+        console.debug(`Updated drone entity ${drone.id} position to (${position.x}, ${position.y}, ${position.z})`);
       }
     }
 
     for(const building of buildings){
       const meshRef = buildingRefs.current.get(building.id);
       if(meshRef?.current){
-        const position = ECS.getComponent(building, 'Position');
+        const position = building.position
         meshRef.current.position.set(position.x, position.y, position.z);
       }
     }

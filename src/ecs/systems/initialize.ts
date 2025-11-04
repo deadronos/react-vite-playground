@@ -10,12 +10,14 @@ import {Vector3} from "three"
 
 export const InitializeSystem = () => {
   // Initialization logic can be added here if needed
-    addDroneEntity(new Vector3().set(0,0,0));
+    const drone=addDroneEntity(new Vector3().set(0,0,0));
     console.debug("Added initial drone entity at (0,0,0)");
-    addBuildingEntity(new Vector3().set(-10,0,0))
-    addBuildingEntity(new Vector3().set(10,0,0))
+    const building1=addBuildingEntity(new Vector3().set(-10,0,0))
+    const building2=addBuildingEntity(new Vector3().set(10,0,0))
     console.debug("Added initial building entities at (-10,0,0) and (10,0,0)");
-
+    world.reindex(drone);
+    world.reindex(building1);
+    world.reindex(building2);
     console.debug("Initialization system executed.");
 
     // Return cleanup function

@@ -41,6 +41,12 @@ export type Message = {
   toEntityId?: number;
 }
 
+let localNextEntityId = 0;
+
+export function getNextEntityId(): number {
+  return localNextEntityId++;
+}
+
 console.debug("Initializing ECS World module");
 
 // factory to create a fresh World instance
@@ -54,9 +60,9 @@ console.debug("ECS World initialized");
 
 // React API (miniplex-react) bound to the current world
 export type ECSWorldType = typeof world;
-export type ECSAPIType = Miniplex.ReactAPI<Entity, ECSWorldType>;
 
-export let ECS: ECSAPIType = createReactAPI(world);
+
+export let ECS = createReactAPI(world);
 
 export default ECS;
 
@@ -69,8 +75,10 @@ export function resetWorld(): void {
   console.debug(`Resetting world. Previous world had ~${prevCount} entities (approx).`);
 
   // create a fresh world and new API bound to it
+  world.clear();
   world = createWorldInstance();
   ECS = createReactAPI(world);
+  localNextEntityId=0;
 
   console.debug("World reset: new World instance created and ECS API recreated.");
 }
@@ -79,11 +87,11 @@ export function resetWorld(): void {
 
 export function addEntity(entity: Partial<Entity>): Entity {
   const newEntity = {
-    id: -1,
+    id: getNextEntityId(),
     ...entity
   } as Entity;
   world.add(newEntity);
-  newEntity.id = world.id(newEntity) ?? -1;
+  // prefer localID newEntity.id = world.id(newEntity) ?? -1;
   console.debug("Added generic entity:", newEntity);
   return newEntity;
 }
@@ -104,14 +112,14 @@ export function getEntityById(id: number): Entity | undefined {
   (If you prefer, you can wrap these in getters.)
 */
 export const queries = {
-  drones: ():Query<Entity> => ECS.world.with('isDrone'),
-  idleDrones: ():Query<Entity> => ECS.world.with('isDrone').where((drone)=> drone.dronestate === 'idle'),
-  buildings: ():Query<Entity> => ECS.world.with('isBuilding'),
-  dronesMoving: ():Query<Entity> => ECS.world.with('isDrone', 'velocity'),
-  buildingsWithMessagesPending: ():Query<Entity> => ECS.world.with('isBuilding', 'MessagePending'),
-  dronesCarryingMessages: ():Query<Entity> => ECS.world.with('isDrone', 'MessageCarrying', 'targetEntityId', 'targetPosition'),
-  dronesCarryingNoMessages: ():Query<Entity> => ECS.world.with('isDrone').without('MessageCarrying'),
-  buildingsWithMessageLogs: ():Query<Entity> => ECS.world.with('isBuilding', 'MessageLog'),
+  drones: () => ECS.world.with('isDrone'),
+  idleDrones: () => ECS.world.with('isDrone').where((drone)=> drone.dronestate === 'idle'),
+  buildings: () => ECS.world.with('isBuilding'),
+  dronesMoving: () => ECS.world.with('isDrone', 'velocity'),
+  buildingsWithMessagesPending: () => ECS.world.with('isBuilding', 'MessagePending'),
+  dronesCarryingMessages: () => ECS.world.with('isDrone', 'MessageCarrying', 'targetEntityId', 'targetPosition'),
+  dronesCarryingNoMessages: () => ECS.world.with('isDrone').without('MessageCarrying'),
+  buildingsWithMessageLogs: () => ECS.world.with('isBuilding', 'MessageLog'),
 };
 
 export function emptyCargo(entity: Entity): void {
@@ -125,30 +133,30 @@ export function emptyCargo(entity: Entity): void {
 
 export function addDroneEntity(position?: Vector3): Entity {
   const newEntity = {
-    id: -1,
-    isdrone: true,
+    id: getNextEntityId(),
+    isDrone: true,
     position: position ?? new THREE.Vector3().set(0, 0, 0),
     velocity: new THREE.Vector3().set(0, 0, 0),
     speed: 1, // units per second
     dronestate: 'idle',
     returnPosition: position ?? new THREE.Vector3().set(0, 0, 0),
-  } as any;
+  };
   world.add(newEntity);
-  newEntity.id = world.id(newEntity) ?? -1;
+  // prefer localID newEntity.id = world.id(newEntity) ?? -1;
   console.debug("Added drone entity:", newEntity);
   return newEntity as Entity;
 }
 
 export function addBuildingEntity(position?: Vector3): Entity {
   const newEntity = {
-    id: -1,
+    id: getNextEntityId(),
     isBuilding: true,
     position: position ?? new THREE.Vector3().set(0, 0, 0),
     loadRadius: 1,
     MessageLog: [],
   } as any;
   world.add(newEntity);
-  newEntity.id = world.id(newEntity) ?? -1;
+  // prefer localID newEntity.id = world.id(newEntity) ?? -1;
   console.debug("Added building entity:", newEntity);
   return newEntity as Entity;
 }
