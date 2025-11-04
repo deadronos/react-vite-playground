@@ -3,12 +3,11 @@ import { useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import ECS, {queries, world, type ECSAPIType, type Entity} from '@/ecs/world';
 import React from 'react';
-import { ref } from 'process';
 
 interface MeshProps {
   entity: Entity;
-  // Adda ref prop for manipulating the mesh if needed
-  meshRef: React.Ref<THREE.Mesh>;
+  // meshRef is a callback ref that receives the THREE.Mesh or null
+  meshRef: React.RefCallback<THREE.Mesh | null>;
 }
 
 function DroneMesh({entity, meshRef}: MeshProps) {
@@ -16,7 +15,7 @@ function DroneMesh({entity, meshRef}: MeshProps) {
   return (
     <mesh ref={meshRef}>
       <boxGeometry args={[0.5, 0.2, 0.5]} />
-      <meshStandardMaterial color="blue" />
+      <meshStandardMaterial color="white" />
     </mesh>
   );
 }
@@ -36,19 +35,23 @@ export default function DroneDelivery() {
   const [drones, setDrones] = React.useState<Entity[]>([]);
   const [buildings, setBuildings] = React.useState<Entity[]>([]);
 
-  const droneRefs = React.useRef<Map<number, React.RefObject<THREE.Mesh>>>(new Map());
-  const buildingRefs = React.useRef<Map<number, React.RefObject<THREE.Mesh>>>(new Map());
+  // Store direct mesh instances (or null) keyed by entity id. Using direct
+  // mesh instances makes it straightforward to set position during the
+  // render loop without mixing RefObjects and callback refs.
+  const droneRefs = React.useRef<Map<number, THREE.Mesh | null>>(new Map());
+  const buildingRefs = React.useRef<Map<number, THREE.Mesh | null>>(new Map());
 
   useEffect(() => {
     const droneSubscription  = queries.drones().onEntityAdded.subscribe((drone)=>{
       console.debug("DroneDelivery detected new drone entity:", drone);
       setDrones((prev) => [...prev, drone]);
-      droneRefs.current.set(drone.id, React.createRef<THREE.Mesh>());
+      // don't pre-create a RefObject; we'll capture the mesh instance via
+      // the ref callback when the mesh mounts
     });
     const buildingSubscription = queries.buildings().onEntityAdded.subscribe((building)=>{
       console.debug("DroneDelivery detected new building entity:", building);
       setBuildings((prev) => [...prev, building]);
-      buildingRefs.current.set(building.id, React.createRef<THREE.Mesh>());
+      // same as drones: mesh instance will be captured by the ref callback
     });
 
     const droneRemovedSubscription = queries.drones().onEntityRemoved.subscribe((drone)=>{
@@ -78,21 +81,21 @@ export default function DroneDelivery() {
   useFrame((_, dt)=>{
     // Sync entity positions
     for(const drone of drones){
-      // Get the mesh reference for the drone
-      const meshRef = droneRefs.current.get(drone.id);
-
-      if(meshRef?.current){
+      // Get the mesh instance for the drone and apply the entity's position
+      const mesh = droneRefs.current.get(drone.id);
+      if(mesh){
         const position = drone.position;
-        meshRef.current.position.set(position.x, position.y, position.z);
-        console.debug(`Updated drone entity ${drone.id} position to (${position.x}, ${position.y}, ${position.z})`);
+        mesh.position.set(position.x, position.y, position.z);
+        // debug can be noisy every frame; keep it for troubleshooting
+        //console.debug(`Updated drone entity ${drone.id} position to (${position.x}, ${position.y}, ${position.z})`);
       }
     }
 
     for(const building of buildings){
-      const meshRef = buildingRefs.current.get(building.id);
-      if(meshRef?.current){
-        const position = building.position
-        meshRef.current.position.set(position.x, position.y, position.z);
+      const mesh = buildingRefs.current.get(building.id);
+      if(mesh){
+        const position = building.position;
+        mesh.position.set(position.x, position.y, position.z);
       }
     }
 
@@ -101,26 +104,30 @@ export default function DroneDelivery() {
   return (
     <>
     {drones.map((drone)=>{
-      // when mapping, pass a ref callback to capture the mesh reference
-      return <DroneMesh
-        key={drone.id}
-        entity={drone}
-        meshRef={(mesh)=>{
-        if(mesh) droneRefs.current.set(drone.id, mesh);
-        else droneRefs.current.delete(drone.id);
-        }}
-      />
+      // when mapping, pass a ref callback to capture the mesh instance
+      return (
+        <DroneMesh
+          key={drone.id}
+          entity={drone}
+          meshRef={(mesh)=>{
+            if(mesh) droneRefs.current.set(drone.id, mesh);
+            else droneRefs.current.delete(drone.id);
+          }}
+        />
+      );
     })}
     {buildings.map((building)=>{
       // when mapping, pass a ref callback to capture the mesh reference
-      return <BuildingMesh
-        key={building.id}
-        entity={building}
-        meshRef={(mesh)=>{
-          if(mesh) buildingRefs.current.set(building.id, mesh);
-          else buildingRefs.current.delete(building.id);
-        }}
-      />
+      return (
+        <BuildingMesh
+          key={building.id}
+          entity={building}
+          meshRef={(mesh)=>{
+            if(mesh) buildingRefs.current.set(building.id, mesh);
+            else buildingRefs.current.delete(building.id);
+          }}
+        />
+      );
     })}
     </>
   );

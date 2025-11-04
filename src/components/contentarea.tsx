@@ -87,7 +87,7 @@ function SettingsView(){
       <Canvas style={{width: '100%', height: '300px', backgroundColor: '#222'}}>
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 10, 10]} />
-        <PerspectiveCamera makeDefault position={[0, 0, 10]} />
+        <PerspectiveCamera makeDefault position={[0, 0, 8]} />
         <mesh position={[0,2,0]}>
           <tetrahedronGeometry args={[1, 1, 1]} />
           <meshStandardMaterial color='orange' />
