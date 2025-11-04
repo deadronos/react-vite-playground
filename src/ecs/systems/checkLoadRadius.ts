@@ -1,4 +1,4 @@
-import { ECS } from '../world';
+import { ECS, world } from '../world';
 import { queries } from '../world';
 import type { Entity } from '../world';
 
@@ -43,7 +43,7 @@ export function CheckLoadRadiusSystem(dt: number): void {
     // Skip drones that are not in a moving state
     if (drone.dronestate == 'idle' || drone.dronestate == 'loading' || drone.dronestate == 'unloading') continue;
     // dronestate left 'movingToPickup', 'movingToDropoff', 'returning'
-
+    console.debug("check drone proximity",drone)
     for (const building of buildings) {
       // check position undefined or loadRadius undefined
       if (!building.position || building.loadRadius === undefined) continue;
@@ -51,15 +51,22 @@ export function CheckLoadRadiusSystem(dt: number): void {
       const distance = drone.position.distanceTo(building.position);
       // Check if within load radius
       if (distance <= building.loadRadius) {
+        console.debug(`Drone ${drone.id} within load radius of Building ${building.id} (distance: ${distance.toFixed(2)} <= ${building.loadRadius})`);
         // Update drone state and action timer
         if (drone.dronestate === 'movingToPickup') {
+          console.debug(`Drone ${drone.id} starting to load at Building ${building.id}.`);
           drone.dronestate = 'loading';
           drone.actionTimer = 1; // e.g., 3 seconds to load
           drone.lastStateChangedAt = Date.now();
+          world.reindex(drone); // ensure ECS knows about the change
         } else if (drone.dronestate === 'movingToDropoff') {
+          console.debug(`Drone ${drone.id} starting to unload at Building ${building.id}.`);
           drone.dronestate = 'unloading';
           drone.actionTimer = 1; // e.g., 3 seconds to unload
           drone.lastStateChangedAt = Date.now();
+          world.reindex(drone); // ensure ECS knows about the change
+        } else{
+          console.debug(`Drone ${drone.id} in unexpected dronestate ${drone.dronestate} upon entering load radius.`);
         }
         // Break after first match to avoid multiple buildings
         break;

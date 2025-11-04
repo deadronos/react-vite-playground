@@ -42,10 +42,13 @@ export function ActionTimerSystem(dt: number): void {
     if (drone.actionTimer === undefined || drone.dronestate === undefined) continue;
     // decrement timer
     drone.actionTimer -= dt;
+    console.debug("drone actionTimer decremented:", drone.id, drone.actionTimer);
     // check if timer elapsed
     if (drone.actionTimer <= 0) {
+      console.debug("drone actionTimer elapsed:", drone.id);
       // handle loading completion
       if (drone.dronestate === 'loading') {
+        console.debug(`Drone ${drone.id} completed loading.`);
         // find target building
         if (drone.targetEntityId !== undefined && drone.targetEntityId !== null) {
           const building = ECS.world.find(e => e.id === drone.targetEntityId && e.isBuilding);

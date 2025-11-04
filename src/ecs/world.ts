@@ -140,11 +140,11 @@ export function addDroneEntity(position?: Vector3): Entity {
     speed: 1, // units per second
     dronestate: 'idle',
     returnPosition: position ?? new THREE.Vector3().set(0, 0, 0),
-  };
+  } as Entity;
   world.add(newEntity);
   // prefer localID newEntity.id = world.id(newEntity) ?? -1;
   console.debug("Added drone entity:", newEntity);
-  return newEntity as Entity;
+  return newEntity;
 }
 
 export function addBuildingEntity(position?: Vector3): Entity {
@@ -152,13 +152,13 @@ export function addBuildingEntity(position?: Vector3): Entity {
     id: getNextEntityId(),
     isBuilding: true,
     position: position ?? new THREE.Vector3().set(0, 0, 0),
-    loadRadius: 1,
+    loadRadius: 1.5,
     MessageLog: [],
-  } as any;
+  } as Entity;
   world.add(newEntity);
   // prefer localID newEntity.id = world.id(newEntity) ?? -1;
   console.debug("Added building entity:", newEntity);
-  return newEntity as Entity;
+  return newEntity;
 }
 
 

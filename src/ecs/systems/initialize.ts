@@ -18,6 +18,13 @@ export const InitializeSystem = () => {
     world.reindex(drone);
     world.reindex(building1);
     world.reindex(building2);
+
+    building1.MessagePending={
+      id:1,
+      fromEntityId:building1.id,
+      toEntityId:building2.id,
+      content:"Hello from Building 1 to Building 2"
+    };
     console.debug("Initialization system executed.");
 
     // Return cleanup function

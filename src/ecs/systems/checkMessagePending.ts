@@ -60,6 +60,13 @@ export function CheckMessagePendingSystem(){
   if(!idleDrone) return console.debug("No idle drones available"); // no idle drones
 
   // assign drone to building
+  if(!idleDrone.returnPosition){
+    idleDrone.returnPosition= idleDrone.position.clone();
+    console.debug(`Set return position for drone ${idleDrone.id}.`);
+  } else {
+    idleDrone.returnPosition= idleDrone.position.clone(); // update return position to current
+    console.debug(`Updated return position for drone ${idleDrone.id}.`);
+  }
   idleDrone.targetEntityId= pendingBuilding.id;
   idleDrone.targetPosition= pendingBuilding.position;
   idleDrone.dronestate= 'movingToPickup';
@@ -68,8 +75,5 @@ export function CheckMessagePendingSystem(){
   console.debug(`Assigned drone ${idleDrone.id} to building ${pendingBuilding.id} for message pickup.`);
 
   // Ensure returnPosition is set
-  if(!idleDrone.returnPosition){
-    idleDrone.returnPosition= idleDrone.position.clone();
-    console.debug(`Set return position for drone ${idleDrone.id}.`);
-  }
+
 }
