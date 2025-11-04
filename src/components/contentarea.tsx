@@ -5,6 +5,7 @@ import { useGridStore } from '@/store/gridStore';
 import './contentarea.css';
 import { Canvas } from '@react-three/fiber';
 import DroneSystems from './DroneSystems';
+import DroneDelivery from './dronedelivery';
 
 
 function HomeView(){
@@ -89,6 +90,7 @@ function SettingsView(){
           <tetrahedronGeometry args={[1, 1, 1]} />
           <meshStandardMaterial color='orange' />
         </mesh>
+        <DroneDelivery />
         <DroneSystems />
       </Canvas>
     </>
