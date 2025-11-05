@@ -1,29 +1,29 @@
 import type * as THREE from 'three';
-import { useEffect } from 'react';
-import { useFrame } from '@react-three/fiber';
-import ECS, {queries, world, type ECSAPIType, type Entity} from '@/ecs/world';
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useFrame, type ThreeEvent } from '@react-three/fiber';
+import { queries, type Entity } from '@/ecs/world';
 
 interface MeshProps {
   entity: Entity;
   // meshRef is a callback ref that receives the THREE.Mesh or null
   meshRef: React.RefCallback<THREE.Mesh | null>;
+  onEntityClick?: (entity: Entity, screenPos: {x:number,y:number}) => void;
 }
 
-function DroneMesh({entity, meshRef}: MeshProps) {
+function DroneMesh({entity, meshRef, onEntityClick}: MeshProps) {
   // Simple representation of a drone as a box
   return (
-    <mesh ref={meshRef}>
+    <mesh ref={meshRef} onClick={(e: ThreeEvent<PointerEvent>)=>{ e.stopPropagation(); const native = (e.nativeEvent as PointerEvent | undefined); const cx = native?.clientX ?? 0; const cy = native?.clientY ?? 0; onEntityClick?.(entity, {x: cx, y: cy}); }}>
       <boxGeometry args={[0.5, 0.2, 0.5]} />
       <meshStandardMaterial color="white" />
     </mesh>
   );
 }
 
-function BuildingMesh({entity, meshRef}: MeshProps) {
+function BuildingMesh({entity, meshRef, onEntityClick}: MeshProps) {
   // Simple representation of a building as a box
   return (
-    <mesh ref={meshRef}>
+    <mesh ref={meshRef} onClick={(e: ThreeEvent<PointerEvent>)=>{ e.stopPropagation(); const native = (e.nativeEvent as PointerEvent | undefined); const cx = native?.clientX ?? 0; const cy = native?.clientY ?? 0; onEntityClick?.(entity, {x: cx, y: cy}); }}>
       <boxGeometry args={[1, 1, 1]} />
       <meshStandardMaterial color="blue" />
     </mesh>
@@ -31,7 +31,11 @@ function BuildingMesh({entity, meshRef}: MeshProps) {
 }
 
 
-export default function DroneDelivery() {
+interface DroneDeliveryProps {
+  onEntityClick?: (entity: Entity) => void;
+}
+
+export default function DroneDelivery({onEntityClick}: DroneDeliveryProps) {
   const [drones, setDrones] = React.useState<Entity[]>([]);
   const [buildings, setBuildings] = React.useState<Entity[]>([]);
 
@@ -78,14 +82,14 @@ export default function DroneDelivery() {
 //  console.debug ("Rendering DroneDelivery with buildings:", buildings);
 
 
-  useFrame((_, dt)=>{
+  useFrame((_, _dt)=>{
     // Sync entity positions
     for(const drone of drones){
       // Get the mesh instance for the drone and apply the entity's position
       const mesh = droneRefs.current.get(drone.id);
       if(mesh){
         const position = drone.position;
-        mesh.position.set(position.x, position.y, position.z);
+        if(position) mesh.position.set(position.x, position.y, position.z);
         // debug can be noisy every frame; keep it for troubleshooting
         //console.debug(`Updated drone entity ${drone.id} position to (${position.x}, ${position.y}, ${position.z})`);
       }
@@ -95,7 +99,7 @@ export default function DroneDelivery() {
       const mesh = buildingRefs.current.get(building.id);
       if(mesh){
         const position = building.position;
-        mesh.position.set(position.x, position.y, position.z);
+        if(position) mesh.position.set(position.x, position.y, position.z);
       }
     }
 
@@ -109,6 +113,7 @@ export default function DroneDelivery() {
         <DroneMesh
           key={drone.id}
           entity={drone}
+          onEntityClick={onEntityClick}
           meshRef={(mesh)=>{
             if(mesh) droneRefs.current.set(drone.id, mesh);
             else droneRefs.current.delete(drone.id);
@@ -122,6 +127,7 @@ export default function DroneDelivery() {
         <BuildingMesh
           key={building.id}
           entity={building}
+          onEntityClick={onEntityClick}
           meshRef={(mesh)=>{
             if(mesh) buildingRefs.current.set(building.id, mesh);
             else buildingRefs.current.delete(building.id);
