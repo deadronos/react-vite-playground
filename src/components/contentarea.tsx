@@ -105,23 +105,22 @@ function SettingsView(){
     const dAdded = queries.drones().onEntityAdded.subscribe((d)=> setDrones(prev => [...prev, d]));
     const dRemoved = queries.drones().onEntityRemoved.subscribe((d)=> setDrones(prev => prev.filter(x=>x.id!==d.id)));
 
-    // polling to update statuses/positions
-    let mounted = true;
-    const tick = () => {
-      if(!mounted) return;
-      setBuildings(world.entities.filter(e => e.isBuilding));
-      setDrones(world.entities.filter(e => e.isDrone));
-      requestAnimationFrame(tick);
-    };
-    const raf = requestAnimationFrame(tick);
+    // periodic polling to update statuses/positions (200ms)
+    const interval = setInterval(()=>{
+      try{
+        setBuildings([...queries.buildings()]);
+        setDrones([...queries.drones()]);
+      }catch(e){
+        // ignore transient errors
+      }
+    }, 200);
 
     return ()=>{
-      mounted = false;
       queries.buildings().onEntityAdded.unsubscribe(bAdded);
       queries.buildings().onEntityRemoved.unsubscribe(bRemoved);
       queries.drones().onEntityAdded.unsubscribe(dAdded);
       queries.drones().onEntityRemoved.unsubscribe(dRemoved);
-      cancelAnimationFrame(raf);
+      clearInterval(interval);
     }
   },[]);
 

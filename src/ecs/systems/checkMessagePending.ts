@@ -1,4 +1,5 @@
 import { queries, world } from "../world";
+import * as THREE from 'three';
 
 
 /*
@@ -62,18 +63,18 @@ export function CheckMessagePendingSystem(){
 
   // Ensure returnPosition is set
   if(idleDrone.returnPosition===undefined){
-    world.addComponent(idleDrone,'returnPosition',idleDrone.position.clone()??new THREE.Vector3(0,0,0));
-    idleDrone.returnPosition= idleDrone.position.clone();
+    world.addComponent(idleDrone,'returnPosition',idleDrone.position?.clone() ?? new THREE.Vector3(0,0,0));
+    idleDrone.returnPosition= idleDrone.position?.clone() ?? new THREE.Vector3(0,0,0);
     console.debug(`Set return position for drone ${idleDrone.id}.`);
   } else {
-    idleDrone.returnPosition= idleDrone.position.clone(); // update return position to current
+    idleDrone.returnPosition= idleDrone.position?.clone() ?? idleDrone.returnPosition; // update return position to current when available
     console.debug(`Updated return position for drone ${idleDrone.id}.`);
   }
    // assign drone to building
   idleDrone.targetEntityId= pendingBuilding.id;
   idleDrone.targetPosition= pendingBuilding.position;
   idleDrone.dronestate= 'movingToPickup';
-  idleDrone.Drone.lastStateChangedAt= Date.now();
+  idleDrone.lastStateChangedAt= Date.now();
   idleDrone.velocity= new THREE.Vector3(0,0,0); // reset velocity
   console.debug(`Assigned drone ${idleDrone.id} to building ${pendingBuilding.id} for message pickup.`);
 
