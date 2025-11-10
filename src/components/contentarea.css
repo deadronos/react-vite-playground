@@ -72,3 +72,40 @@
   .HomeViewGrid { --cols: 4; }
   .HomeViewGridCellCard { padding: 0.25rem; font-size: 0.9rem; }
 }
+
+/* Drone Delivery UI readouts */
+.drone-readouts{
+  display:flex;
+  gap:1rem;
+  margin-top:1rem;
+}
+.drone-readout{
+  flex:1;
+  padding:0.5rem;
+  border:1px solid #333;
+}
+
+.drone-hover-panel{
+  margin-top:1rem;
+  padding:0.5rem;
+  border:1px solid #666;
+  background:#111;
+  position:absolute;
+  z-index:2000;
+  /* position controlled via CSS variables set on the canvas wrapper */
+  left: var(--hover-left, 8px);
+  top: var(--hover-top, 8px);
+}
+
+.drone-canvas-wrapper{
+  position: relative;
+}
+.drone-hover-row{
+  display:flex;
+  gap:0.5rem;
+  align-items:center;
+}
+.drone-hover-input{
+  flex:1;
+  padding:0.25rem;
+}

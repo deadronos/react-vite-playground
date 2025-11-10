@@ -1,7 +1,5 @@
 import { Vector3 } from 'three';
 import { ECS, world } from '../world';
-import { queries } from '../world';
-import type { Entity } from '../world';
 
 
 /*
@@ -59,12 +57,20 @@ export function ActionTimerSystem(dt: number): void {
             drone.MessageCarrying = building.MessagePending;
             console.debug(`Drone ${drone.id} loaded message:`, drone.MessageCarrying);
             // remove MessagePending from building
-            world.removeComponent(building, "MessagePending");
+            try{
+              world.removeComponent(building, "MessagePending");
+            }catch(e){
+              // If world.removeComponent is not supported or fails, fallback to deleting property
+              // (some codepaths assign MessagePending directly on the entity)
+              delete (building as any).MessagePending;
+            }
+            // Ensure the plain property is removed as well so UI consumers don't see stale data
+            if ((building as any).MessagePending !== undefined) delete (building as any).MessagePending;
             // set drone state to movingToDropoff
             drone.dronestate = 'movingToDropoff';
             // clear actionTimer
             drone.actionTimer = 0;
-            drone.targetEntityId=drone.MessageCarrying?.toEntityId??null;
+            drone.targetEntityId = drone.MessageCarrying?.toEntityId ?? null;
             if (drone.targetEntityId !== null) {
               drone.targetPosition=world?.entity(drone.targetEntityId)?.position??undefined;
               console.debug(`Drone ${drone.id} targetPosition set to dropoff entity ${drone.targetEntityId}.`);
@@ -100,17 +106,24 @@ export function ActionTimerSystem(dt: number): void {
       if (drone.dronestate === 'unloading') {
         // find target building
         if (drone.targetEntityId !== undefined && drone.targetEntityId !== null) {
-          const building = ECS.world.find(e => e.id === drone.targetEntityId && e.isBuilding);
-          if (building) {
-            // append to building.MessageLog
-            building.MessageLog.push(drone.MessageCarrying);
-            // clear drone.MessageCarrying
-            drone.removeComponent('MessageCarrying');
+          const building = world.entity(drone.targetEntityId);
+          if (building?.isBuilding) {
+            // ensure MessageLog exists
+            if (!building.MessageLog) building.MessageLog = [];
+            // append to building.MessageLog (guard for null)
+            if (drone.MessageCarrying) building.MessageLog.push(drone.MessageCarrying);
+            // clear drone.MessageCarrying via world API for consistency
+            try{
+              world.removeComponent(drone, 'MessageCarrying');
+            }catch(e){
+              // fallback to direct delete
+              delete (drone as any).MessageCarrying;
+            }
             // set drone state to returning
             drone.dronestate = 'returning';
             // clear actionTimer
             drone.actionTimer = 0;
-            drone.targetPosition = drone.returnPosition || null;
+            drone.targetPosition = drone.returnPosition ?? undefined;
             drone.targetEntityId = null;
             drone.lastStateChangedAt = Date.now();
           }

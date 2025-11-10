@@ -19,12 +19,23 @@ export const InitializeSystem = () => {
     world.reindex(building1);
     world.reindex(building2);
 
-    building1.MessagePending={
-      createdAt:Date.now(),
-      fromEntityId:building1.id,
-      toEntityId:building2.id,
-      text:"Hello from Building 1 to Building 2"
-    };
+    // Add MessagePending using the world API for consistency with systems
+    try{
+      world.addComponent(building1, 'MessagePending', {
+        createdAt: Date.now(),
+        fromEntityId: building1.id,
+        toEntityId: building2.id,
+        text: "Hello from Building 1 to Building 2",
+      });
+    }catch(e){
+      // fallback to direct assignment if addComponent isn't available
+      (building1 as any).MessagePending = {
+        createdAt: Date.now(),
+        fromEntityId: building1.id,
+        toEntityId: building2.id,
+        text: "Hello from Building 1 to Building 2",
+      };
+    }
     world.reindex(building1);
     console.debug("Initialization system executed.");
 
