@@ -8,8 +8,7 @@
     "types": ["vite/client"],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@triplex/*": [".triplex/*"]
+      "@/*": ["src/*"]
     },
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
@@ -30,7 +29,7 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "files": ["src/env.d.ts", "src/global.d.ts", "src/components/TransmissionSphere.tsx"],
+  "files": ["src/env.d.ts", "src/global.d.ts"],
   "include": ["src"],
   "exclude": ["src/**/*.test.*", "src/**/*.spec.*"]
 }
