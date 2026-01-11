@@ -1,13 +1,13 @@
 import { useState, type ReactElement } from 'react';
 import './App.css';
 import { Theme, Box } from "@radix-ui/themes";
-import { Canvas } from '@react-three/fiber';
 import { AppLayout } from './components/layout/AppLayout';
 import CustomHooksExample from './components/examples/CustomHooks';
 import ContextAPIExample from './components/examples/ContextAPI';
 import CompoundComponentsExample from './components/examples/CompoundComponents';
 import StateManagementExample from './components/examples/StateManagement';
 import MainScene from './components/examples/ThreeJSScene';
+import OffscreenCanvasExample from './components/examples/OffscreenCanvas';
 
 function App(): ReactElement {
   const [activeExample, setActiveExample] = useState('custom-hooks');
@@ -28,6 +28,8 @@ function App(): ReactElement {
               <MainScene />
           </Box>
         );
+      case 'offscreen-canvas':
+        return <OffscreenCanvasExample />;
       default:
         return <div>Select an example</div>;
     }

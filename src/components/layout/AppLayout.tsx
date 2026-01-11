@@ -13,6 +13,7 @@ const EXAMPLES = [
   { id: 'compound-components', label: 'Compound Components' },
   { id: 'state-management', label: 'State Management (Zustand)' },
   { id: 'threejs-scene', label: 'Three.js Scene' },
+  { id: 'offscreen-canvas', label: 'Offscreen Canvas (Worker)' },
 ];
 
 export const AppLayout: React.FC<AppLayoutProps> = ({ children, activeExample, onSelectExample }) => {
