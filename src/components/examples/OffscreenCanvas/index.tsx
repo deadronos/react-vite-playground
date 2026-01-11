@@ -1,4 +1,4 @@
-import { lazy, useMemo } from 'react';
+import { lazy, useMemo, useEffect } from 'react';
 import { Canvas } from '@react-three/offscreen';
 import { Box, Heading, Text, Badge, Flex } from '@radix-ui/themes';
 
@@ -11,6 +11,13 @@ export default function OffscreenCanvasExample() {
     () => new Worker(new URL('./worker.tsx', import.meta.url), { type: 'module' }),
     []
   );
+
+  // Cleanup worker on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      worker.terminate();
+    };
+  }, [worker]);
 
   return (
     <Box style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
