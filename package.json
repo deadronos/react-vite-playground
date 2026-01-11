@@ -19,7 +19,7 @@
     "@radix-ui/themes": "^3.2.1",
     "@react-three/drei": "^10.7.6",
     "@react-three/fiber": "^9.4.0",
-    "@react-three/offscreen": "^0.0.8",
+    "@react-three/offscreen": "github:deadronos/react-three-offscreen#react19",
     "@tailwindcss/postcss": "^4.1.16",
     "@tailwindcss/vite": "^4.1.16",
     "@types/three": "^0.180.0",
