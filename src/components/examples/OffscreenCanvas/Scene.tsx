@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { OrbitControls, Box, Sphere, Torus } from '@react-three/drei';
-import * as THREE from 'three';
+import type * as THREE from 'three';
 
 function AnimatedBox({ position }: { position: [number, number, number] }) {
   const meshRef = useRef<THREE.Mesh>(null);
@@ -32,6 +32,7 @@ function AnimatedSphere({ position }: { position: [number, number, number] }) {
 
   return (
     <Sphere ref={meshRef} position={position} args={[0.7, 32, 32]}>
+      {/* eslint-disable-next-line react/no-unknown-property */}
       <meshStandardMaterial color="purple" metalness={0.5} roughness={0.2} />
     </Sphere>
   );
