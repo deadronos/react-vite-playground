@@ -65,6 +65,17 @@ export default defineConfig(async ({ mode }) => {
 
   return {
     plugins,
+    // Configure worker to support @react-three/offscreen
+    worker: {
+      plugins: () => [
+        react({
+          babel: {
+            plugins: [['babel-plugin-react-compiler']],
+          },
+          jsxRuntime: 'automatic',
+        }) as unknown as Plugin,
+      ],
+    },
     resolve: {
       alias: {
         // convenient alias to the src directory
