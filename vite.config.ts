@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import tailwindcss from "@tailwindcss/vite"
 
 // Export an async config so we can conditionally add optional plugins
 export default defineConfig(async ({ mode }) => {
@@ -16,21 +17,8 @@ export default defineConfig(async ({ mode }) => {
     }) as unknown as Plugin,
   ];
 
-  try {
-    const tailwindcss = await import('@tailwindcss/vite');
-    const tailwaindcssPluginCandidate = tailwindcss as unknown as {
-      default?: unknown;
-    };
-
-    const tailwindccsPlugin = tailwaindcssPluginCandidate.default ?? tailwindcss;
-    if (typeof tailwindccsPlugin === 'function') {
-      const result = (tailwindccsPlugin as unknown as (...args: unknown[]) => Plugin | Plugin[])();
-      if (Array.isArray(result)) plugins.push(...result);
-      else plugins.push(result);
-    }
-  } catch {
-    // no-op: plugin not installed
-  }
+  // Always add Tailwind CSS support
+  plugins.push(...tailwindcss());
 
   // Optionally add SVGR if installed (allows: import { ReactComponent as Icon } from './icon.svg')
   try {
@@ -77,10 +65,21 @@ export default defineConfig(async ({ mode }) => {
 
   return {
     plugins,
+    // Configure worker to support @react-three/offscreen
+    worker: {
+      plugins: () => [
+        react({
+          babel: {
+            plugins: [['babel-plugin-react-compiler']],
+          },
+          jsxRuntime: 'automatic',
+        }) as unknown as Plugin,
+      ],
+    },
     resolve: {
       alias: {
         // convenient alias to the src directory
-        '@': path.resolve(__dirname, 'src'),
+        '@': path.resolve(__dirname, './src'),
         '@triplex': path.resolve(__dirname, '.triplex'),
       },
     },
