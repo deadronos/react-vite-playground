@@ -31,6 +31,34 @@ Save state
 Offline progression
 */
 
+type Resource = "ore" | "plate";
+
+type Machine = {
+  id: string;
+  input?: Resource;
+  output: Resource;
+  progress: number;
+  progressDone: number;
+  tickperProgress?: number; // how much progress is made per tick, default 1
+  active?: boolean;
+};
+
+type FactoryState = {
+  machines: Machine[];
+  resources: Record<Resource, number>;
+};
+
+const initialState: FactoryState = {
+  machines: [
+    { id: "ore-node", output: "ore", progress: 0, progressDone: 1, tickperProgress: 1, active: true,
+    { id: "furnace", input: "ore", output: "plate", progress: 0, progressDone: 2 },
+    { id: "storage", input: "plate", output: "plate", progress: 0, progressDone: 0 },
+  ],
+  resources: {
+    ore: 0,
+    plate: 0,
+  },
+};
 
 export default function ChatGPTChallenge1() {
   return (
