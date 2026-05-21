@@ -23,21 +23,21 @@ export default function App(): React.JSX.Element {
             className={activeTab === "challenge1" ? "button-active" : "button-inactive"}
             onClick={() => setActiveTab(activeTab === "challenge1" ? "" : "challenge1")}
           >
-            {challenge1}
+            {challenge1.split(" - ")[0]}<p>{challenge1.split(" - ")[1]}</p>
           </button>
           <span className="separator">|</span>
           <button
             className={activeTab === "challenge2" ? "button-active" : "button-inactive"}
             onClick={() => setActiveTab(activeTab === "challenge2" ? "" : "challenge2")}
           >
-            {challenge2}
+            {challenge2.split(" - ")[0]}<p>{challenge2.split(" - ")[1]}</p>
           </button>
           <span className="separator">|</span>
           <button
             className={activeTab === "challenge3" ? "button-active" : "button-inactive"}
             onClick={() => setActiveTab(activeTab === "challenge3" ? "" : "challenge3")}
           >
-            {challenge3}
+            {challenge3.split(" - ")[0]}<p>{challenge3.split(" - ")[1]}</p>
           </button>
         </div>
         <div style={{ padding: '16px' }}>
