@@ -1,0 +1,10 @@
+
+.button-active {
+  background-color: #007bff;
+  color: white;
+}
+
+.button-inactive {
+  background-color: #f0f0f0;
+  color: black;
+}
