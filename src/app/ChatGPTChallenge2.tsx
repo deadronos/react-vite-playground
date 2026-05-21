@@ -177,6 +177,7 @@ export function ChatGPTChallenge2():React.ReactElement {
     ]);
 
     let lastTime = performance.now();
+    let raf: number;
 
     const gameLoop = (time: number) => {
       const deltaTime = (time - lastTime) / 1000; // Convert to seconds
@@ -184,14 +185,14 @@ export function ChatGPTChallenge2():React.ReactElement {
 
       movementSystem.update(ECSWorldInstance, deltaTime);
       setTick(tick => tick + 1); // Trigger re-render
-      requestAnimationFrame(gameLoop);
+      raf = requestAnimationFrame(gameLoop);
     };
 
-    requestAnimationFrame(gameLoop);
+    raf = requestAnimationFrame(gameLoop);
 
     return () => {
       // Cleanup if needed
-      cancelAnimationFrame(gameLoop);
+      cancelAnimationFrame(raf);
       ECSWorldInstance.removeEntity(entity1.id);
       ECSWorldInstance.removeEntity(entity2.id);
     };
