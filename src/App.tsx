@@ -4,6 +4,7 @@ import ChatGPTChallenge1 from "./app/ChatGPTChallenge1";
 import GeminiDailyChallenge1 from "./app/GeminiDailyChallenge1";
 import GeminiChallengeReactState from "./app/GeminiChallengeReactState";
 import "./App.css";
+import { ChatGPTChallenge2 } from "./app/ChatGPTChallenge2";
 
 
 
@@ -14,6 +15,7 @@ export default function App(): React.JSX.Element {
   const challenge1="ChatGPT Challenge 1 - factory like using useContext in React";
   const challenge2="Gemini Daily Challenge 1 - simple component";
   const challenge3="Gemini Daily Challenge 2 - more complex component with state";
+  const challenge4="ChatGPT Challenge 2 - ECS Playground (game architecture)";
 
   return (
     <main role="main" className="app">
@@ -39,6 +41,13 @@ export default function App(): React.JSX.Element {
           >
             {challenge3.split(" - ")[0]}<p>{challenge3.split(" - ")[1]}</p>
           </button>
+          <span className="separator">|</span>
+          <button
+            className={activeTab === "challenge4" ? "button-active" : "button-inactive"}
+            onClick={() => setActiveTab(activeTab === "challenge4" ? "" : "challenge4")}
+          >
+            {challenge4.split(" - ")[0]}<p>{challenge4.split(" - ")[1]}</p>
+          </button>
         </div>
         <div style={{ padding: '16px' }}>
           <h1>Welcome to the React Vite Playground!</h1>
@@ -47,6 +56,7 @@ export default function App(): React.JSX.Element {
         {activeTab === "challenge1" && <ChatGPTChallenge1 />}
         {activeTab === "challenge2" && <GeminiDailyChallenge1 />}
         {activeTab === "challenge3" && <GeminiChallengeReactState />}
+        {activeTab === "challenge4" && <ChatGPTChallenge2 />}
       </ThemeProvider>
     </main>
   );
