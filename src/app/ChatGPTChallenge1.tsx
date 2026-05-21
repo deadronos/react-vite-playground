@@ -499,7 +499,7 @@ function FactoryCard() {
         <h3>Connections</h3>
         {displayData.connections.map(connection => (
           <div key={connection.id} className={`connection ${connection.isActive ? "active" : ""}`}>
-            {connection.fromNodeId} -> {connection.toNodeId}
+            {connection.fromNodeId} {"->"} {connection.toNodeId}
           </div>
         ))}
       </div>
