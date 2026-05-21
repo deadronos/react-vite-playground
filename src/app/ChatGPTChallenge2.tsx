@@ -115,8 +115,8 @@ class SimpleMovementSystem implements MovementSystemImpl {
   update(world: ECSWorld, deltaTime: number): void {
     const entities = world.getEntitiesWithComponents(['Position', 'Velocity']);
     entities.forEach(entity => {
-      const position = entity.components['Position'] as PositionComponent;
-      const velocity = entity.components['Velocity'] as VelocityComponent;
+      const position = entity.components.Position as PositionComponent;
+      const velocity = entity.components.Velocity as VelocityComponent;
       position.x += velocity.vx * deltaTime;
       position.y += velocity.vy * deltaTime;
     });
@@ -191,6 +191,9 @@ export function ChatGPTChallenge2():React.ReactElement {
 
     return () => {
       // Cleanup if needed
+      cancelAnimationFrame(gameLoop);
+      ECSWorldInstance.removeEntity(entity1.id);
+      ECSWorldInstance.removeEntity(entity2.id);
     };
   }, [ECSWorldInstance, movementSystem]);
 
