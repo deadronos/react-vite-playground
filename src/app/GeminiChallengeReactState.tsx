@@ -117,11 +117,19 @@ interface ResourceState {
   credits: number;
 }
 
+type ResourceCost = Partial<Record<ResourceType, number>>;
+
+const ResourceCosts: Record<ResourceType, ResourceCost> = {
+  energy: { energy: 0, materials: 0, credits: 0 },
+  materials: { energy: 2, materials: 0, credits: 0 },
+  credits: { energy: 1, materials: 1, credits: 0 },
+};
+
 // 2. Define strict props for the Reusable Component
 interface ActionCardProps {
   resource: ResourceType;
-  cost: Partial<Record<ResourceType, number>>;
-  onExecute: (resource: ResourceType, cost: Partial<Record<ResourceType, number>>) => void;
+  cost: ResourceCost;
+  onExecute: (resource: ResourceType, cost: ResourceCost) => void;
   disabled: boolean;
 }
 
@@ -147,8 +155,33 @@ export default function PlaygroundChallenge() {
   const [selectedAutoTarget, setSelectedAutoTarget] = useState<ResourceType>('materials');
 
   // 3. Implement the execution logic here safely updating types
-  const handleExecute = (target: ResourceType, cost: Partial<Record<ResourceType, number>>) => {
+  const handleExecute = (target: ResourceType, cost: ResourceCost) => {
     // Check if affordable...
+      const canAfford = Object.entries(cost).every(([key, value]) => {
+        const resourceKey = key as ResourceType; // Type assertion to ensure correct typing
+        return resources[resourceKey] >= (value || 0); // Check if we have enough of each resource
+      });
+
+      if (!canAfford) {
+        console.log(`Cannot afford to generate ${target}`);
+        return; // Exit if we can't afford the action
+      }
+
+      // If affordable, update the resources
+      setResources(prevResources => {
+        const updatedResources = { ...prevResources };
+
+        // Deduct the cost
+        Object.entries(cost).forEach(([key, value]) => {
+          const resourceKey = key as ResourceType; // Type assertion
+          updatedResources[resourceKey] -= value || 0; // Deduct the cost
+        });
+
+        // Add 1 to the target resource
+        updatedResources[target] += 1;
+
+        return updatedResources;
+      });
     // Deduct cost and add 1 to the target resource...
   };
 
@@ -157,7 +190,15 @@ export default function PlaygroundChallenge() {
     if (!autoRun) return;
 
     // Set up interval...
-  }, [autoRun, selectedAutoTarget, resources]);
+    const interval = setInterval(() => {
+      // Attempt to execute the selectedAutoTarget action if affordable...
+      if(!selectedAutoTarget) return; // noTarget selected, skip
+      const cost = ResourceCosts[selectedAutoTarget];
+      handleExecute(selectedAutoTarget, cost);
+    }, 1000);
+    return () => clearInterval(interval); // Clean up on unmount or when autoRun changes
+  }, [autoRun, selectedAutoTarget, resources, handleExecute]);
+  // updates on changes to autoRun, selectedAutoTarget, and resources
 
   return (
     <div style={{ padding: '24px' }}>
@@ -165,6 +206,49 @@ export default function PlaygroundChallenge() {
       <pre>{JSON.stringify(resources, null, 2)}</pre>
 
       {/* Build UI for controls and map the ActionCards here */}
+      <div style={{ display: 'flex', gap: '16px' }}>
+        {Object.keys(ResourceCosts).map((resourceKey) => {
+          const resource = resourceKey as ResourceType; // Type assertion for correct typing
+          const cost = ResourceCosts[resource];
+          const isDisabled = !Object.entries(cost).every(([key, value]) => {
+            const resourceKey = key as ResourceType; // Type assertion
+            return resources[resourceKey] >= (value || 0); // Check if we have enough of each resource
+          });
+
+          return (
+            <ActionCard
+              key={resource}
+              resource={resource}
+              cost={cost}
+              onExecute={handleExecute}
+              disabled={isDisabled}
+            />
+          );
+        })}
+      </div>
+
+      <div style={{ marginTop: '24px' }}>
+        <label>
+          <input
+            type="checkbox"
+            checked={autoRun}
+            onChange={(e) => setAutoRun(e.target.checked)}
+          />
+          Automation Mode
+        </label>
+        <select
+          value={selectedAutoTarget}
+          onChange={(e) => setSelectedAutoTarget(e.target.value as ResourceType)}
+          disabled={!autoRun}
+          style={{ marginLeft: '16px' }}
+        >
+          {Object.keys(ResourceCosts).map((resourceKey) => (
+            <option key={resourceKey} value={resourceKey}>
+              {resourceKey.toUpperCase()}
+            </option>
+          ))}
+        </select>
+      </div>
     </div>
   );
 }
