@@ -6,7 +6,7 @@ import GeminiChallengeReactState from "./app/GeminiChallengeReactState";
 import "./App.css";
 import { ChatGPTChallenge2 } from "./app/ChatGPTChallenge2";
 import GeminiDailyChallenge2 from "./app/GeminiDailyChallenge2";
-
+import GeminiDailyChallenge3 from "./app/GeminiDailyChallenge3";
 
 
 
@@ -17,7 +17,8 @@ export default function App(): React.JSX.Element {
   const challenge2="Gemini Daily Challenge 1 - simple component";
   const challenge3="Gemini Challenge React State - more complex component with state";
   const challenge4="ChatGPT Challenge 2 - ECS Playground (game architecture)";
-  const challege5="Gemini Daily Challenge 2 - string manipulation and algorithms";
+  const challenge5="Gemini Daily Challenge 2 - string manipulation and algorithms";
+  const challenge6="Gemini Daily Challenge 3 - title case capitalizer with live input";
 
   return (
     <main role="main" className="app">
@@ -55,7 +56,14 @@ export default function App(): React.JSX.Element {
             className={activeTab === "challenge5" ? "button-active" : "button-inactive"}
             onClick={() => setActiveTab(activeTab === "challenge5" ? "" : "challenge5")}
           >
-            {challege5.split(" - ")[0]}<p>{challege5.split(" - ")[1]}</p>
+            {challenge5.split(" - ")[0]}<p>{challenge5.split(" - ")[1]}</p>
+          </button>
+          <span className="separator">|</span>
+          <button
+            className={activeTab === "challenge6" ? "button-active" : "button-inactive"}
+            onClick={() => setActiveTab(activeTab === "challenge6" ? "" : "challenge6")}
+          >
+            {challenge6.split(" - ")[0]}<p>{challenge6.split(" - ")[1]}</p>
           </button>
         </div>
         <div style={{ padding: '16px' }}>
@@ -67,6 +75,7 @@ export default function App(): React.JSX.Element {
         {activeTab === "challenge3" && <GeminiChallengeReactState />}
         {activeTab === "challenge4" && <ChatGPTChallenge2 />}
         {activeTab === "challenge5" && <GeminiDailyChallenge2 />}
+        {activeTab === "challenge6" && <GeminiDailyChallenge3 />}
       </ThemeProvider>
     </main>
   );
