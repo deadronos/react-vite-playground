@@ -7,6 +7,7 @@ import "./App.css";
 import { ChatGPTChallenge2 } from "./app/ChatGPTChallenge2";
 import GeminiDailyChallenge2 from "./app/GeminiDailyChallenge2";
 import GeminiDailyChallenge3 from "./app/GeminiDailyChallenge3";
+import GeminiDailyChallenge4 from "./app/GeminiDailyChallenge4";
 
 
 
@@ -19,6 +20,7 @@ export default function App(): React.JSX.Element {
   const challenge4="ChatGPT Challenge 2 - ECS Playground (game architecture)";
   const challenge5="Gemini Daily Challenge 2 - string manipulation and algorithms";
   const challenge6="Gemini Daily Challenge 3 - title case capitalizer with live input";
+  const challenge7="Gemini Daily Challenge 4 - array filter and accumulator";
 
   return (
     <main role="main" className="app">
@@ -65,7 +67,15 @@ export default function App(): React.JSX.Element {
           >
             {challenge6.split(" - ")[0]}<p>{challenge6.split(" - ")[1]}</p>
           </button>
+          <span className="separator">|</span>
+          <button
+            className={activeTab === "challenge7" ? "button-active" : "button-inactive"}
+            onClick={() => setActiveTab(activeTab === "challenge7" ? "" : "challenge7")}
+          >
+            {challenge7.split(" - ")[0]}<p>{challenge7.split(" - ")[1]}</p>
+          </button>
         </div>
+        <div className="separator" />
         <div style={{ padding: '16px' }}>
           <h1>Welcome to the React Vite Playground!</h1>
           <p>Select a challenge from the tabs above to get started.</p>
@@ -76,6 +86,7 @@ export default function App(): React.JSX.Element {
         {activeTab === "challenge4" && <ChatGPTChallenge2 />}
         {activeTab === "challenge5" && <GeminiDailyChallenge2 />}
         {activeTab === "challenge6" && <GeminiDailyChallenge3 />}
+        {activeTab === "challenge7" && <GeminiDailyChallenge4 />}
       </ThemeProvider>
     </main>
   );
