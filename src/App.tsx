@@ -9,6 +9,7 @@ import GeminiDailyChallenge2 from "./app/GeminiDailyChallenge2";
 import GeminiDailyChallenge3 from "./app/GeminiDailyChallenge3";
 import GeminiDailyChallenge4 from "./app/GeminiDailyChallenge4";
 import GeminiDailyChallenge5 from "./app/GeminiDailyChallenge5";
+import GeminiDailyChallenge6 from "./app/GeminiDailyChallenge6";
 
 
 
@@ -23,6 +24,7 @@ export default function App(): React.JSX.Element {
   const challenge6="Gemini Daily Challenge 3 - title case capitalizer with live input";
   const challenge7="Gemini Daily Challenge 4 - array filter and accumulator";
   const challenge8="Gemini Daily Challenge 5 - object transformer and key mapper";
+  const challenge9="Gemini Daily Challenge 6 - event timer and custom hook";
 
   return (
     <main role="main" className="app">
@@ -83,6 +85,13 @@ export default function App(): React.JSX.Element {
           >
             {challenge8.split(" - ")[0]}<p>{challenge8.split(" - ")[1]}</p>
           </button>
+          <span className="separator">|</span>
+          <button
+            className={activeTab === "challenge9" ? "button-active" : "button-inactive"}
+            onClick={() => setActiveTab(activeTab === "challenge9" ? "" : "challenge9")}
+          >
+            {challenge9.split(" - ")[0]}<p>{challenge9.split(" - ")[1]}</p>
+          </button>
         </div>
         <div className="separator" />
         <div style={{ padding: '16px' }}>
@@ -97,6 +106,7 @@ export default function App(): React.JSX.Element {
         {activeTab === "challenge6" && <GeminiDailyChallenge3 />}
         {activeTab === "challenge7" && <GeminiDailyChallenge4 />}
         {activeTab === "challenge8" && <GeminiDailyChallenge5 />}
+        {activeTab === "challenge9" && <GeminiDailyChallenge6 />}
       </ThemeProvider>
     </main>
   );
