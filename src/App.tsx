@@ -18,6 +18,7 @@ import GeminiDailyChallenge10 from "./app/GeminiDailyChallenge10";
 import GeminiDailyChallenge11 from "./app/GeminiDailyChallenge11";
 import GeminiDailyChallenge12 from "./app/GeminiDailyChallenge12";
 import GeminiDailyChallenge13 from "./app/GeminiDailyChallenge13";
+import GeminiDailyChallenge14 from "./app/GeminiDailyChallenge14";
 
 export default function App(): React.JSX.Element {
   const [activeTab, setActiveTab] = React.useState("");
@@ -38,6 +39,7 @@ export default function App(): React.JSX.Element {
   const challenge14="Gemini Daily Challenge 11 - the star rating component (interactive grid states)";
   const challenge15="Gemini Daily Challenge 12 - the custom modal dialog (DOM portals & layout overlays)";
   const challenge16="Gemini Daily Challenge 13 - the fetch search & cache component (real API integration)";
+  const challenge17="Gemini Daily Challenge 14 - the custom dropdown menu (accessible keyboard interactivity)";
 
   return (
     <main role="main" className="app">
@@ -154,6 +156,13 @@ export default function App(): React.JSX.Element {
           >
             {challenge16.split(" - ")[0]}<p>{challenge16.split(" - ")[1]}</p>
           </button>
+          <span className="separator">|</span>
+          <button
+            className={activeTab === "challenge17" ? "button-active" : "button-inactive"}
+            onClick={() => setActiveTab(activeTab === "challenge17" ? "" : "challenge17")}
+          >
+            {challenge17.split(" - ")[0]}<p>{challenge17.split(" - ")[1]}</p>
+          </button>
         </div>
         <div className="separator" />
         <div style={{ padding: '16px' }}>
@@ -178,6 +187,7 @@ export default function App(): React.JSX.Element {
         {activeTab === "challenge14" && <GeminiDailyChallenge11 />}
         {activeTab === "challenge15" && <GeminiDailyChallenge12 />}
         {activeTab === "challenge16" && <GeminiDailyChallenge13 />}
+        {activeTab === "challenge17" && <GeminiDailyChallenge14 />}
         </div>
       </ThemeProvider>
     </main>
