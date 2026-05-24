@@ -102,37 +102,36 @@ function CustomDropdown({options, preselectedOptionId, onSelect}: DropdownProps)
     dropdownRef.current = document.getElementsByClassName("custom-dropdown-container")[0] as HTMLDivElement;
   }, [])
 
-  // install document click listener on change to isOpen
-  useEffect(()=>{
-    if(!isOpen) return; // nothing to do
-
-    // we are open > install
-    const handleOutsideClick = (event: MouseEvent) => {
-      if(dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleOutsideClick);
-
-    return () => {
-      // cleanup listener on close
-      document.removeEventListener("mousedown", handleOutsideClick);
-    }
-  }, [isOpen])
+  // our CustomMenu will listen for outside click
 
 
 
+  function handleCloseWithoutSelection() {
+    setIsOpen(false);
+  }
 
+  // we set our own state and pass the selection up to the parent, we also close the menu if still open
+  function handleLocalSelect(option: Option) {
+    setSelectedOption(option);
+    onSelect(option);
+    setIsOpen(false);
+  }
 
   return (
     <div className="custom-dropdown-container">
       <div className="custom-dropdown-compoment">
-        <div className="custom-select-button" onClick={() => setIsOpen(!isOpen)}>
-          <span>{selectedOption.label}</span>
+        <div className="custom-select-button" onClick={() => setIsOpen(!isOpen)} onFocus={() => setIsOpen(true)}>
+          <button style={{
+            padding: "8px 12px",
+            cursor: "pointer",
+            backgroundColor: isOpen ? "#eee" : "#fff",
+            color: isOpen ? "#333" : "#000",
+            border: "1px solid #ccc",
+          }}>{selectedOption.label}</button>
         </div>
-        <div className={`custom-dropdown-menu ${isOpen ? "open" : ""}`}>
-          <CustomSelectMenu options={options} onSelect={onSelect} />
-        </div>
+        {isOpen && <div className={`custom-dropdown-menu ${isOpen ? "open" : ""}`}>
+          <CustomSelectMenu options={options} preselectedOptionId={preselectedOptionId} onSelect={handleLocalSelect} onClose={handleCloseWithoutSelection} />
+        </div>}
       </div>
     </div>
   )
@@ -141,14 +140,166 @@ function CustomDropdown({options, preselectedOptionId, onSelect}: DropdownProps)
 
 interface CustomSelectMenuProps {
     options: Option[];
+    preselectedOptionId?: number;
     onSelect: (option: Option) => void;
-    dropdownRef: React.RefObject<HTMLDivElement>;
+    onClose: () => void;
 }
 
-function CustomSelectMenu({options, onSelect}: CustomSelectMenuProps): React.JSX.Element {
+function CustomSelectMenu({options, preselectedOptionId, onSelect, onClose}: CustomSelectMenuProps): React.JSX.Element {
+
+  // prefocused index is the index of the option that matches the preselectedOptionId, or 0 if not found
+  const [focusedIndex, setFocusedIndex] = useState<number>(
+    options.findIndex(option => option.id === preselectedOptionId) ?? 0
+  );
+
+  const selectMenuRef = useRef<HTMLDivElement>(null);
+
+
+
+  // installing document click listener for outside click detection
+  useEffect(() => {
+    function handleOutsideClick(event: MouseEvent) {
+      // preventDefault behavior for clicks to prevent any unwanted side effects
+      event.preventDefault();
+      if(selectMenuRef.current && !selectMenuRef.current.contains(event.target as Node)) {
+        // close the menu, we can do this by simulating a click outside or by calling a prop function to close the menu
+        console.log("Clicked outside of menu, closing menu");
+        onClose();
+      }
+    }
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [onClose]);
+
+  const [selectedOption, setSelectedOption] = useState<Option>(
+    options.find(option => option.id === preselectedOptionId) ?? options[0]
+  );
+
+  // watch selected option and log
+  useEffect(()=>{
+    console.log("Selected option changed:", selectedOption);
+  },[selectedOption])
+
+  function handleSelectOptionClick(option: Option) {
+    setSelectedOption(option);
+    onSelect(option);
+    // we have selected something
+    onClose();
+  }
+
+  /*  since we dont use a native select
+    we dont have on change and option elements,
+    so we need to handle the keyboard navigation and selection logic ourselves,
+    we will do this in the handleKeyDown function, we will check the focusedIndex and update it accordingly,
+    and when the user presses enter, we will call handleSelectOptionClick with the currently focused option
+
+    this will rebuild the onchange logic roughly
+  function handleOnChange(event: React.ChangeEvent<HTMLSelectElement>) {
+    const selectedId = parseInt(event.target.value);
+    const selectedOption = options.find(option => option.id === selectedId);
+    if (selectedOption) {
+      handleSelectOptionClick(selectedOption);
+    }
+  }
+  */
+
+  function handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+      // prevent default behavior for arrow keys to prevent scrolling
+      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        console.log("Preventing default for arrow key:", event.key);
+        event.preventDefault();
+      }
+
+      // if we are called and no option focused, we should focus the first option
+      if (focusedIndex === -1) {
+        console.log("No option focused, setting focus to first option");
+        setFocusedIndex(0);
+      }
+  };
+
+  // we should also have an outside click listener
+  function handleOutsideClick(event: MouseEvent) {
+    if(selectMenuRef.current && !selectMenuRef.current.contains(event.target as Node)) {
+      // close the menu, we can do this by simulating a click outside or by calling a prop function to close the menu
+      console.log("Clicked outside of menu, closing menu");
+      onClose();
+    }
+  }
+
+  function handleClickAndDecideInsideOrOutside(event: React.MouseEvent<HTMLDivElement>) {
+    if(selectMenuRef.current && !selectMenuRef.current.contains(event.target as Node)) {
+      // we have clicked outside, it will handle onClose
+      console.log("Clicked outside, passing event to outside click handler");
+      handleOutsideClick(event.nativeEvent);
+    } else {
+      // we have clicked inside
+      // check if we hit any option
+      console.log("Clicked inside, checking if we hit an option");
+      let selectedOption: Option | undefined;
+      for (let i = 0; i < options.length; i++) {
+        const optionElement = document.getElementsByClassName("custom-select-menu-option")[i] as HTMLDivElement;
+        if (optionElement.contains(event.target as Node)) {
+          selectedOption = options[i];
+          break;
+        }
+      }
+      // if we did, selected option will be set, if not, it will be undefined
+      if (selectedOption) {
+        console.log("Clicked on option:", selectedOption);
+        // handles onClose because we have selected something, and also handles the selection logic
+        handleSelectOptionClick(selectedOption);
+      }
+      console.log("Clicked inside but not on an option, ignoring click");
+      // we have clicked and somehow didnt select an option, we should just ignore it and not do anything, the user might have clicked on the menu container or something else, we should not close the menu in this case
+    }
+  }
+
+  function handleKeyDownWithinMenu(event: React.KeyboardEvent<HTMLDivElement>) {
+    if (event.key === "ArrowDown") {
+      console.log("Arrow down pressed within menu, moving focus down");
+      setFocusedIndex((prevIndex) => (prevIndex + 1) % options.length);
+    } else if (event.key === "ArrowUp") {
+      console.log("Arrow up pressed within menu, moving focus up");
+      setFocusedIndex((prevIndex) => (prevIndex - 1 + options.length) % options.length);
+    } else if (event.key === "Enter") {
+      console.log("Enter pressed within menu, selecting focused option");
+      handleSelectOptionClick(options[focusedIndex]);
+    } else if (event.key === "Escape") {
+      // close the menu, we can do this by simulating a click outside or by calling a prop function to close the menu
+      console.log("Escape pressed within menu, closing menu");
+      onClose();
+    }
+  }
+
+
+
 
   return (
-    <div className="custom-select-menu">
+    <div ref={selectMenuRef} className="custom-select-menu" onKeyDown={handleKeyDown} onClick={handleClickAndDecideInsideOrOutside}>
+      {/* something could have clicked the container, it should also listen - that should not close */}
+      {options.map((option, index) => (
+        <input
+          key={option.id}
+          value={option.label}
+          readOnly
+          className={`custom-select-menu-option ${index === focusedIndex ? "focused" : ""}`}
+          onClick={handleClickAndDecideInsideOrOutside}
+          onMouseEnter={() => setFocusedIndex(index)} // update focused index on mouse hover
+          onMouseLeave={() => setFocusedIndex(-1)} // reset focused index on mouse leave
+          onKeyDown={handleKeyDownWithinMenu}
+          style={{
+            padding: "8px 12px",
+            cursor: "pointer",
+            backgroundColor: index === focusedIndex ? "#eee" : "#fff",
+            color: index === focusedIndex ? "#333" : "#000",
+            display: "block",
+          }}
+        />
+      ))}
     </div>
   );
 }
+
+
+
