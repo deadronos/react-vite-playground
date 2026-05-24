@@ -37,12 +37,44 @@ import React, { useState, useEffect } from "react";
 
 
 export default function GeminiDailyChallenge6():React.JSX.Element {
+  const [tickCount, setTickCount] = useState(0);
+  const [isRunning, setIsRunning] = useState(true);
+
+  function toggleRunning() {
+    setIsRunning((prev) => !prev);
+  }
+
+  function resetCounter() {
+    setTickCount(0);
+  }
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (isRunning) {
+        setTickCount((prev) => prev + 1);
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  },[isRunning]);
+
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Gemini Daily Challenge 6: The Event Timer & Custom Hook</h1>
       <p className="mb-4">
-        This is a placeholder for the Live Uptime Counter component. Please implement the functionality as described in the challenge prompt.
+        This component implements a live uptime counter that tracks how many seconds a user has spent on the page. It includes a pause/resume button to control the counting and a reset button to set the counter back to zero. The useEffect hook is used to manage the interval timer, ensuring it is properly cleaned up when the component unmounts or when the counting is paused.
       </p>
+      <div className="mb-4">
+        <span className="text-xl font-mono">{tickCount} seconds</span>
+      </div>
+      <div className="space-x-2">
+        <button type="button" onClick={toggleRunning} className="px-4 py-2 bg-blue-500 text-white rounded">
+          {isRunning? "Pause" : "Resume"}
+        </button>
+        <button type="reset" onClick={resetCounter} className="px-4 py-2 bg-red-500 text-white rounded">
+          Reset
+        </button>
+      </div>
     </div>
   );
 }
