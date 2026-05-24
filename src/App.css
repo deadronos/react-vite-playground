@@ -5,6 +5,32 @@
 }
 
 .button-inactive {
-  background-color: #f0f0f0;
+  background-color: #cacaca;
   color: black;
+}
+
+.separator {
+  margin: 0 8px;
+  color: #888;
+}
+
+.app {
+  font-family: Arial, sans-serif;
+  padding: 16px;
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.app button {
+  border: gray solid 1px;
+  padding: 8px 16px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
