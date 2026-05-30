@@ -96,7 +96,7 @@ function DragAndDropList() {
     <div>
       {tasks.map((task, index) => (
         <div
-          key={index}
+          key={task}
           draggable={true}
           onDragStart={() => handleDragStart(index)}
           onDragEnter={() => handleDragEnter(index)}
