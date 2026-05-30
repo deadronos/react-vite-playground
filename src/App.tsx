@@ -23,9 +23,14 @@ import GeminiDailyChallenge15 from "./app/GeminiDailyChallenge15";
 import GeminiDailyChallenge16 from "./app/GeminiChallengeMiniIdle1";
 import GeminiDailyChallenge17 from "./app/GeminiDailyChallenge17";
 import GeminiDailyChallenge18 from "./app/GeminiDailyChallenge18";
+import GeminiDailyChallenge19 from "./app/GeminiDailyChallenge19";
+import GeminiDailyChallenge20 from "./app/GeminiDailyChallenge20";
+
+
 
 export default function App(): React.JSX.Element {
   const [activeTab, setActiveTab] = React.useState("");
+  const [collapsed, setCollapsed] = React.useState(false);
 
   const challenge1="ChatGPT Challenge 1 - factory like using useContext in React";
   const challenge2="Gemini Daily Challenge 1 - simple component";
@@ -48,186 +53,115 @@ export default function App(): React.JSX.Element {
   const challenge19="Gemini Daily Challenge 16 - the mini idle clicker game (combining all skills learned!)";
   const challenge20="Gemini Daily Challenge 17 - the key-value vocabulary flashcard app (two-sided UI flipping)";
   const challenge21="Gemini Daily Challenge 18 - the temperature unit converter (dual-way dependent inputs)";
+  const challenge22="Gemini Daily Challenge 19 - the dynamic progress bar (controlled interval stepping)";
+  const challenge23="Gemini Daily Challenge 20 - the drag-and-drop list order (reordering array indexes)";
+
+
+  function renderActiveTab() {
+    switch (activeTab) {
+      case "challenge1":
+        return <ChatGPTChallenge1 />;
+      case "challenge2":
+        return <GeminiDailyChallenge1 />;
+      case "challenge3":
+        return <GeminiChallengeReactState />;
+      case "challenge4":
+        return <ChatGPTChallenge2 />;
+      case "challenge5":
+        return <GeminiDailyChallenge2 />;
+      case "challenge6":
+        return <GeminiDailyChallenge3 />;
+      case "challenge7":
+        return <GeminiDailyChallenge4 />;
+      case "challenge8":
+        return <GeminiDailyChallenge5 />;
+      case "challenge9":
+        return <GeminiDailyChallenge6 />;
+      case "challenge10":
+        return <GeminiDailyChallenge7 />;
+      case "challenge11":
+        return <GeminiDailyChallenge8 />;
+      case "challenge12":
+        return <GeminiDailyChallenge9 />;
+      case "challenge13":
+        return <GeminiDailyChallenge10 />;
+      case "challenge14":
+        return <GeminiDailyChallenge11 />;
+      case "challenge15":
+        return <GeminiDailyChallenge12 />;
+      case "challenge16":
+        return <GeminiDailyChallenge13 />;
+      case "challenge17":
+        return <GeminiDailyChallenge14 />;
+      case "challenge18":
+        return <GeminiDailyChallenge15 />;
+      case "challenge19":
+        return <GeminiDailyChallenge16 />;
+      case "challenge20":
+        return <GeminiDailyChallenge17 />;
+      case "challenge21":
+        return <GeminiDailyChallenge18 />;
+      case "challenge22":
+        return <GeminiDailyChallenge19 />;
+      case "challenge23":
+        return <GeminiDailyChallenge20 />;
+      default:
+        return null;
+    }
+  }
+
+  function toggleCollapse() {
+    setCollapsed(prev => !prev);
+  }
+
+  function renderNavMenu() {
+    if (collapsed) {
+      return null;
+    }
+    return (
+      <div className="nav-menu" style={{ display: 'flex', flexDirection: 'column', padding: '8px' }}>
+        <button onClick={() => setActiveTab("")}>Home</button>
+        <button onClick={() => setActiveTab("challenge1")}>{challenge1}</button>
+        <button onClick={() => setActiveTab("challenge2")}>{challenge2}</button>
+        <button onClick={() => setActiveTab("challenge3")}>{challenge3}</button>
+        <button onClick={() => setActiveTab("challenge4")}>{challenge4}</button>
+        <button onClick={() => setActiveTab("challenge5")}>{challenge5}</button>
+        <button onClick={() => setActiveTab("challenge6")}>{challenge6}</button>
+        <button onClick={() => setActiveTab("challenge7")}>{challenge7}</button>
+        <button onClick={() => setActiveTab("challenge8")}>{challenge8}</button>
+        <button onClick={() => setActiveTab("challenge9")}>{challenge9}</button>
+        <button onClick={() => setActiveTab("challenge10")}>{challenge10}</button>
+        <button onClick={() => setActiveTab("challenge11")}>{challenge11}</button>
+        <button onClick={() => setActiveTab("challenge12")}>{challenge12}</button>
+        <button onClick={() => setActiveTab("challenge13")}>{challenge13}</button>
+        <button onClick={() => setActiveTab("challenge14")}>{challenge14}</button>
+        <button onClick={() => setActiveTab("challenge15")}>{challenge15}</button>
+        <button onClick={() => setActiveTab("challenge16")}>{challenge16}</button>
+        <button onClick={() => setActiveTab("challenge17")}>{challenge17}</button>
+        <button onClick={() => setActiveTab("challenge18")}>{challenge18}</button>
+        <button onClick={() => setActiveTab("challenge19")}>{challenge19}</button>
+        <button onClick={() => setActiveTab("challenge20")}>{challenge20}</button>
+        <button onClick={() => setActiveTab("challenge21")}>{challenge21}</button>
+        <button onClick={() => setActiveTab("challenge22")}>{challenge22}</button>
+        <button onClick={() => setActiveTab("challenge23")}>{challenge23}</button>
+      </div>
+    )
+  }
 
   return (
     <main role="main" className="app">
       <ThemeProvider defaultTheme="dark" storageKey="react-vite-playground-ui-theme">
-        <div className="tabs">
-          <button
-            className={activeTab === "challenge1" ? "button-active" : "button-inactive"}
-            onClick={() => setActiveTab(activeTab === "challenge1" ? "" : "challenge1")}
-          >
-            {challenge1.split(" - ")[0]}<p>{challenge1.split(" - ")[1]}</p>
-          </button>
-          <span className="separator">|</span>
-          <button
-            className={activeTab === "challenge2" ? "button-active" : "button-inactive"}
-            onClick={() => setActiveTab(activeTab === "challenge2" ? "" : "challenge2")}
-          >
-            {challenge2.split(" - ")[0]}<p>{challenge2.split(" - ")[1]}</p>
-          </button>
-          <span className="separator">|</span>
-          <button
-            className={activeTab === "challenge3" ? "button-active" : "button-inactive"}
-            onClick={() => setActiveTab(activeTab === "challenge3" ? "" : "challenge3")}
-          >
-            {challenge3.split(" - ")[0]}<p>{challenge3.split(" - ")[1]}</p>
-          </button>
-          <span className="separator">|</span>
-          <button
-            className={activeTab === "challenge4" ? "button-active" : "button-inactive"}
-            onClick={() => setActiveTab(activeTab === "challenge4" ? "" : "challenge4")}
-          >
-            {challenge4.split(" - ")[0]}<p>{challenge4.split(" - ")[1]}</p>
-          </button>
-          <span className="separator">|</span>
-          <button
-            className={activeTab === "challenge5" ? "button-active" : "button-inactive"}
-            onClick={() => setActiveTab(activeTab === "challenge5" ? "" : "challenge5")}
-          >
-            {challenge5.split(" - ")[0]}<p>{challenge5.split(" - ")[1]}</p>
-          </button>
-          <span className="separator">|</span>
-          <button
-            className={activeTab === "challenge6" ? "button-active" : "button-inactive"}
-            onClick={() => setActiveTab(activeTab === "challenge6" ? "" : "challenge6")}
-          >
-            {challenge6.split(" - ")[0]}<p>{challenge6.split(" - ")[1]}</p>
-          </button>
-          <span className="separator">|</span>
-          <button
-            className={activeTab === "challenge7" ? "button-active" : "button-inactive"}
-            onClick={() => setActiveTab(activeTab === "challenge7" ? "" : "challenge7")}
-          >
-            {challenge7.split(" - ")[0]}<p>{challenge7.split(" - ")[1]}</p>
-          </button>
-          <span className="separator">|</span>
-          <button
-            className={activeTab === "challenge8" ? "button-active" : "button-inactive"}
-            onClick={() => setActiveTab(activeTab === "challenge8" ? "" : "challenge8")}
-          >
-            {challenge8.split(" - ")[0]}<p>{challenge8.split(" - ")[1]}</p>
-          </button>
-          <span className="separator">|</span>
-          <button
-            className={activeTab === "challenge9" ? "button-active" : "button-inactive"}
-            onClick={() => setActiveTab(activeTab === "challenge9" ? "" : "challenge9")}
-          >
-            {challenge9.split(" - ")[0]}<p>{challenge9.split(" - ")[1]}</p>
-          </button>
-          <span className="separator">|</span>
-          <button
-            className={activeTab === "challenge10" ? "button-active" : "button-inactive"}
-            onClick={() => setActiveTab(activeTab === "challenge10" ? "" : "challenge10")}
-          >
-            {challenge10.split(" - ")[0]}<p>{challenge10.split(" - ")[1]}</p>
-          </button>
-          <span className="separator">|</span>
-          <button
-            className={activeTab === "challenge11" ? "button-active" : "button-inactive"}
-            onClick={() => setActiveTab(activeTab === "challenge11" ? "" : "challenge11")}
-          >
-            {challenge11.split(" - ")[0]}<p>{challenge11.split(" - ")[1]}</p>
-          </button>
-          <span className="separator">|</span>
-          <button
-            className={activeTab === "challenge12" ? "button-active" : "button-inactive"}
-            onClick={() => setActiveTab(activeTab === "challenge12" ? "" : "challenge12")}
-          >
-            {challenge12.split(" - ")[0]}<p>{challenge12.split(" - ")[1]}</p>
-          </button>
-          <span className="separator">|</span>
-          <button
-            className={activeTab === "challenge13" ? "button-active" : "button-inactive"}
-            onClick={() => setActiveTab(activeTab === "challenge13" ? "" : "challenge13")}
-          >
-            {challenge13.split(" - ")[0]}<p>{challenge13.split(" - ")[1]}</p>
-          </button>
-          <span className="separator">|</span>
-          <button
-            className={activeTab === "challenge14" ? "button-active" : "button-inactive"}
-            onClick={() => setActiveTab(activeTab === "challenge14" ? "" : "challenge14")}
-          >
-            {challenge14.split(" - ")[0]}<p>{challenge14.split(" - ")[1]}</p>
-          </button>
-          <span className="separator">|</span>
-          <button
-            className={activeTab === "challenge15" ? "button-active" : "button-inactive"}
-            onClick={() => setActiveTab(activeTab === "challenge15" ? "" : "challenge15")}
-          >
-            {challenge15.split(" - ")[0]}<p>{challenge15.split(" - ")[1]}</p>
-          </button>
-          <span className="separator">|</span>
-          <button
-            className={activeTab === "challenge16" ? "button-active" : "button-inactive"}
-            onClick={() => setActiveTab(activeTab === "challenge16" ? "" : "challenge16")}
-          >
-            {challenge16.split(" - ")[0]}<p>{challenge16.split(" - ")[1]}</p>
-          </button>
-          <span className="separator">|</span>
-          <button
-            className={activeTab === "challenge17" ? "button-active" : "button-inactive"}
-            onClick={() => setActiveTab(activeTab === "challenge17" ? "" : "challenge17")}
-          >
-            {challenge17.split(" - ")[0]}<p>{challenge17.split(" - ")[1]}</p>
-          </button>
-          <span className="separator">|</span>
-          <button
-            className={activeTab === "challenge18" ? "button-active" : "button-inactive"}
-            onClick={() => setActiveTab(activeTab === "challenge18" ? "" : "challenge18")}
-          >
-            {challenge18.split(" - ")[0]}<p>{challenge18.split(" - ")[1]}</p>
-          </button>
-          <span className="separator">|</span>
-          <button
-            className={activeTab === "challenge19" ? "button-active" : "button-inactive"}
-            onClick={() => setActiveTab(activeTab === "challenge19" ? "" : "challenge19")}
-          >
-            {challenge19.split(" - ")[0]}<p>{challenge19.split(" - ")[1]}</p>
-          </button>
-          <span className="separator">|</span>
-          <button
-            className={activeTab === "challenge20" ? "button-active" : "button-inactive"}
-            onClick={() => setActiveTab(activeTab === "challenge20" ? "" : "challenge20")}
-          >
-            {challenge20.split(" - ")[0]}<p>{challenge20.split(" - ")[1]}</p>
-          </button>
-          <span className="separator">|</span>
-          <button
-            className={activeTab === "challenge21" ? "button-active" : "button-inactive"}
-            onClick={() => setActiveTab(activeTab === "challenge21" ? "" : "challenge21")}
-          >
-            {challenge21.split(" - ")[0]}<p>{challenge21.split(" - ")[1]}</p>
-          </button>
+        <div className="app-background" />
+        <div className="app-header" style={{ padding: '16px', borderBottom: '1px solid #ccc' }}>
+          <h1 style={{ margin: 0 }}>React Vite Playground</h1>
         </div>
-        <div className="separator" />
-        <div style={{ padding: '16px' }}>
-          <h1>Welcome to the React Vite Playground!</h1>
-          <p>Select a challenge from the tabs above to get started.</p>
+        <div className="nav-menu-container" style={{ position: 'relative', top: 0, left: 0, zIndex: 1000, padding: '8px', borderBottom: '1px solid #ccc' }}>
+          <button onClick={toggleCollapse} style={{ position: 'relative', top: '8px', left: '8px' }}>Expand Tabs</button>
+          {!collapsed && renderNavMenu()}
         </div>
-        <div className="separator" />
-        <div className="tab-content" style={{ padding: '16px' }}>
-        {activeTab === "challenge1" && <ChatGPTChallenge1 />}
-        {activeTab === "challenge2" && <GeminiDailyChallenge1 />}
-        {activeTab === "challenge3" && <GeminiChallengeReactState />}
-        {activeTab === "challenge4" && <ChatGPTChallenge2 />}
-        {activeTab === "challenge5" && <GeminiDailyChallenge2 />}
-        {activeTab === "challenge6" && <GeminiDailyChallenge3 />}
-        {activeTab === "challenge7" && <GeminiDailyChallenge4 />}
-        {activeTab === "challenge8" && <GeminiDailyChallenge5 />}
-        {activeTab === "challenge9" && <GeminiDailyChallenge6 />}
-        {activeTab === "challenge10" && <GeminiDailyChallenge7 />}
-        {activeTab === "challenge11" && <GeminiDailyChallenge8 />}
-        {activeTab === "challenge12" && <GeminiDailyChallenge9 />}
-        {activeTab === "challenge13" && <GeminiDailyChallenge10 />}
-        {activeTab === "challenge14" && <GeminiDailyChallenge11 />}
-        {activeTab === "challenge15" && <GeminiDailyChallenge12 />}
-        {activeTab === "challenge16" && <GeminiDailyChallenge13 />}
-        {activeTab === "challenge17" && <GeminiDailyChallenge14 />}
-        {activeTab === "challenge18" && <GeminiDailyChallenge15 />}
-        {activeTab === "challenge19" && <GeminiDailyChallenge16 />}
-        {activeTab === "challenge20" && <GeminiDailyChallenge17 />}
-        {activeTab === "challenge21" && <GeminiDailyChallenge18 />}
+
+        <div className="tab-content" style={{ position: 'relative', top: '44px', padding: '16px' }}>
+          {renderActiveTab()}
         </div>
       </ThemeProvider>
     </main>
