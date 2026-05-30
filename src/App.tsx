@@ -21,6 +21,8 @@ import GeminiDailyChallenge13 from "./app/GeminiDailyChallenge13";
 import GeminiDailyChallenge14 from "./app/GeminiDailyChallenge14";
 import GeminiDailyChallenge15 from "./app/GeminiDailyChallenge15";
 import GeminiDailyChallenge16 from "./app/GeminiChallengeMiniIdle1";
+import GeminiDailyChallenge17 from "./app/GeminiDailyChallenge17";
+import GeminiDailyChallenge18 from "./app/GeminiDailyChallenge18";
 
 export default function App(): React.JSX.Element {
   const [activeTab, setActiveTab] = React.useState("");
@@ -44,6 +46,8 @@ export default function App(): React.JSX.Element {
   const challenge17="Gemini Daily Challenge 14 - the custom dropdown menu (accessible keyboard interactivity)";
   const challenge18="Gemini Daily Challenge 15 - the localStorage state sync (persistent application memory)";
   const challenge19="Gemini Daily Challenge 16 - the mini idle clicker game (combining all skills learned!)";
+  const challenge20="Gemini Daily Challenge 17 - the key-value vocabulary flashcard app (two-sided UI flipping)";
+  const challenge21="Gemini Daily Challenge 18 - the temperature unit converter (dual-way dependent inputs)";
 
   return (
     <main role="main" className="app">
@@ -181,6 +185,20 @@ export default function App(): React.JSX.Element {
           >
             {challenge19.split(" - ")[0]}<p>{challenge19.split(" - ")[1]}</p>
           </button>
+          <span className="separator">|</span>
+          <button
+            className={activeTab === "challenge20" ? "button-active" : "button-inactive"}
+            onClick={() => setActiveTab(activeTab === "challenge20" ? "" : "challenge20")}
+          >
+            {challenge20.split(" - ")[0]}<p>{challenge20.split(" - ")[1]}</p>
+          </button>
+          <span className="separator">|</span>
+          <button
+            className={activeTab === "challenge21" ? "button-active" : "button-inactive"}
+            onClick={() => setActiveTab(activeTab === "challenge21" ? "" : "challenge21")}
+          >
+            {challenge21.split(" - ")[0]}<p>{challenge21.split(" - ")[1]}</p>
+          </button>
         </div>
         <div className="separator" />
         <div style={{ padding: '16px' }}>
@@ -208,6 +226,8 @@ export default function App(): React.JSX.Element {
         {activeTab === "challenge17" && <GeminiDailyChallenge14 />}
         {activeTab === "challenge18" && <GeminiDailyChallenge15 />}
         {activeTab === "challenge19" && <GeminiDailyChallenge16 />}
+        {activeTab === "challenge20" && <GeminiDailyChallenge17 />}
+        {activeTab === "challenge21" && <GeminiDailyChallenge18 />}
         </div>
       </ThemeProvider>
     </main>
