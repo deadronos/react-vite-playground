@@ -37,14 +37,96 @@ Set up your text input fields, declare your rendering labels below it to display
 
 */
 
+
+import React from "react";
+import { useState, useEffect } from "react";
+
 export default function GeminiDailyChallenge21() {
   return (
     <div>
       <h1>Gemini Daily Challenge 21: The Debounced Search Bar</h1>
       <p>Type into the search box and watch the debounced query update after you stop typing for 500ms.</p>
       {/* Your implementation goes here */}
-
+      <DebouncedSearchBar />
     </div>
   );
 }
 
+function DebouncedSearchBar() {
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [apiResults, setAPIResults] = useState<string[]>([]);
+
+  useEffect(()=> {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    }
+  }, [searchQuery])
+
+  function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setSearchQuery(event.target.value);
+  }
+
+  useEffect(() => {
+    if (!debouncedQuery) {
+      setAPIResults([]);
+      return;
+    }
+
+    let isCurrentRequest = true;
+
+    MockAPISearch.search(debouncedQuery).then(results => {
+      if (isCurrentRequest) {
+        setAPIResults(results);
+      }
+    })
+    .catch(error => {
+      console.error("API Search Error:", error);
+    });
+
+    return () => {
+      isCurrentRequest = false;
+    };
+  }, [debouncedQuery]);
+
+  return (
+    <div>
+      <input type="text" placeholder="Search..." onChange={handleInputChange} />
+      <p>Debounced Query: {debouncedQuery}</p>
+      <ul>
+        {apiResults.map((result, index) => (
+          <li key={index}>{result}</li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+
+class MockAPISearch {
+  static MockResults = [
+    "Result 1",
+    "Result 2",
+    "Result 3",
+    "Result 4",
+    "Result 5"
+  ];
+
+  static PickRandomResult(): string {
+    const randomIndex = Math.floor(Math.random() * this.MockResults.length);
+    return this.MockResults[randomIndex];
+  }
+  static search(query: string): Promise<string[]> {
+    console.log(`API Search Triggered for query: "${query}"`);
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve([`Result for "${query}"`+ MockAPISearch.PickRandomResult()]);
+      }, 1000); // Simulate network delay
+    });
+  }
+}
