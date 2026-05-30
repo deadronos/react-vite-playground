@@ -25,7 +25,7 @@ import GeminiDailyChallenge17 from "./app/GeminiDailyChallenge17";
 import GeminiDailyChallenge18 from "./app/GeminiDailyChallenge18";
 import GeminiDailyChallenge19 from "./app/GeminiDailyChallenge19";
 import GeminiDailyChallenge20 from "./app/GeminiDailyChallenge20";
-
+import GeminiDailyChallenge21 from "./app/GeminiDailyChallenge21";
 
 
 export default function App(): React.JSX.Element {
@@ -55,7 +55,7 @@ export default function App(): React.JSX.Element {
   const challenge21="Gemini Daily Challenge 18 - the temperature unit converter (dual-way dependent inputs)";
   const challenge22="Gemini Daily Challenge 19 - the dynamic progress bar (controlled interval stepping)";
   const challenge23="Gemini Daily Challenge 20 - the drag-and-drop list order (reordering array indexes)";
-
+  const challenge24="Gemini Daily Challenge 21 - the debounced search bar (performance-throttling inputs)";
 
   function renderActiveTab() {
     switch (activeTab) {
@@ -105,6 +105,8 @@ export default function App(): React.JSX.Element {
         return <GeminiDailyChallenge19 />;
       case "challenge23":
         return <GeminiDailyChallenge20 />;
+      case "challenge24":
+        return <GeminiDailyChallenge21 />;
       default:
         return null;
     }
@@ -144,6 +146,7 @@ export default function App(): React.JSX.Element {
         <button onClick={() => setActiveTab("challenge21")}>{challenge21}</button>
         <button onClick={() => setActiveTab("challenge22")}>{challenge22}</button>
         <button onClick={() => setActiveTab("challenge23")}>{challenge23}</button>
+        <button onClick={() => setActiveTab("challenge24")}>{challenge24}</button>
       </div>
     )
   }
