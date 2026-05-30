@@ -49,10 +49,72 @@ export default function GeminiDailyChallenge20() {
       <h1>Gemini Daily Challenge 20: The Drag-and-Drop List Order</h1>
       <p>Click and drag the tasks to reorder them as you see fit!</p>
       {/* Your implementation goes here */}
-     
+      <DragAndDropList />
     </div>
   );
 }
 
 
+function DragAndDropList() {
+  const initialTasks = [
+    "🚀 1. Complete Sandbox Dashboard",
+    "🛡️ 2. Audit Security Tokens",
+    "🛰️ 3. Deploy Production Clusters"
+  ];
+
+  const [tasks, setTasks] = useState(initialTasks);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+
+  function handleDragStart(index: number) {
+    setDraggedIndex(index);
+  }
+
+  function preventDefault(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+  }
+
+  function handleDragEnter(index: number) {
+    if (draggedIndex === null || draggedIndex === index) return;
+
+    const updatedList = [...tasks];
+    const [removedItem] = updatedList.splice(draggedIndex, 1);
+    updatedList.splice(index, 0, removedItem);
+
+    setTasks(updatedList);
+    setDraggedIndex(index);
+  }
+
+  function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
+    preventDefault(e);
+  }
+
+  function handleDragEnd() {
+    setDraggedIndex(null);
+  }
+
+  return (
+    <div>
+      {tasks.map((task, index) => (
+        <div
+          key={index}
+          draggable={true}
+          onDragStart={() => handleDragStart(index)}
+          onDragEnter={() => handleDragEnter(index)}
+          onDragOver={handleDragOver}
+          onDragEnd={handleDragEnd}
+          style={{
+            border: '1px solid black',
+            padding: '8px',
+            marginBottom: '4px',
+            cursor: 'move',
+            backgroundColor: draggedIndex === index ? 'cyan' : 'white',
+            color: draggedIndex === index ? '#888' : 'black'
+          }}
+        >
+          {task}
+        </div>
+      ))}
+    </div>
+  );
+}
 
