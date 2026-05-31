@@ -42,13 +42,61 @@ Set up your text list arrays, anchor your bottom target node pointer using a sta
 */
 
 
+import React, { useEffect, useRef, useState } from "react";
+
 export default function GeminiDailyChallenge22() {
   return (
     <div>
-      <h2>Gemini Daily Challenge 22 - the dynamic progress bar (controlled interval stepping)</h2>
-      <p>Coming soon...</p>
+      <h2>Gemini Daily Challenge 22 - the infinite scroll simulator (window intersection observer)</h2>
+      <p>Implement the infinite scroll simulator challenge here!</p>
+      <InfiniteScrollSimulator />
     </div>
   );
 }
 
 
+const MockFeedInitial = Array.from({ length: 10 }, (_, i) => `Item ${i + 1}`);
+
+function InfiniteScrollSimulator() {
+
+  const [feedItems, setFeedItems] = useState(MockFeedInitial);
+  const [isLoading, setIsLoading] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  // create observer
+  useEffect(()=> {
+    const observer = new IntersectionObserver((entries) => {
+      const [entry] = entries;
+      if (entry.isIntersecting) {
+        // simulate loading delay
+        setIsLoading(true);
+        setTimeout(() => {
+          setFeedItems((prev) => {
+            const nextItems = Array.from({ length: 5 }, (_, i) => `Item ${prev.length + i + 1}`);
+            return [...prev, ...nextItems];
+          });
+          setIsLoading(false);
+        }, 300);
+      }
+    }, { threshold: 0.1 });
+
+    if (sentinelRef.current) observer.observe(sentinelRef.current);
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div className="infinite-scroll-simulator">
+      <div className="scroll-container"style={{ maxHeight: '300px', overflowY: 'scroll', border: '1px solid #444' }}>
+        {feedItems.map((item, index) => (
+          <div key={index} className="feed-item" style={{ padding: "8px", borderBottom: "1px solid #ccc" }}>
+            {item}
+          </div>
+        ))}
+        {isLoading && <div className="loading" style={{ padding: "8px", textAlign: "center" }}>Loading...</div>}
+        <div className="sentinel" ref={sentinelRef} style={{ height: "10px", backgroundColor: "transparent" }} />
+      </div>
+    </div>
+  )
+
+}
