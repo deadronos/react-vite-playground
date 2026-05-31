@@ -67,7 +67,7 @@ function InfiniteScrollSimulator() {
   useEffect(()=> {
     const observer = new IntersectionObserver((entries) => {
       const [entry] = entries;
-      if (entry.isIntersecting) {
+      if (entry.isIntersecting && !isLoading) {
         // simulate loading delay
         setIsLoading(true);
         setTimeout(() => {
@@ -83,7 +83,7 @@ function InfiniteScrollSimulator() {
     if (sentinelRef.current) observer.observe(sentinelRef.current);
 
     return () => observer.disconnect();
-  }, []);
+  }, [isLoading]);
 
   return (
     <div className="infinite-scroll-simulator">
