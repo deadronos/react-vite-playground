@@ -1,4 +1,15 @@
 import React from "react";
+import {
+  Boxes,
+  ChevronLeft,
+  ChevronRight,
+  Code2,
+  Component,
+  FlaskConical,
+  Home,
+  Layers3,
+  Sparkles,
+} from "lucide-react";
 import { ThemeProvider } from "./components/theme-provider";
 import ChatGPTChallenge1 from "./app/ChatGPTChallenge1";
 import GeminiDailyChallenge1 from "./app/GeminiDailyChallenge1";
@@ -28,151 +39,342 @@ import GeminiDailyChallenge20 from "./app/GeminiDailyChallenge20";
 import GeminiDailyChallenge21 from "./app/GeminiDailyChallenge21";
 import GeminiDailyChallenge22 from "./app/GeminiDailyChallenge22";
 
+type Challenge = {
+  id: string;
+  title: string;
+  source: "ChatGPT" | "Gemini";
+  topic: string;
+  accent: "amber" | "cyan" | "green" | "rose";
+  component: React.ComponentType;
+};
+
+const challenges: Challenge[] = [
+  {
+    id: "challenge1",
+    title: "Factory pattern with React context",
+    source: "ChatGPT",
+    topic: "Context",
+    accent: "amber",
+    component: ChatGPTChallenge1,
+  },
+  {
+    id: "challenge2",
+    title: "Simple component fundamentals",
+    source: "Gemini",
+    topic: "Components",
+    accent: "cyan",
+    component: GeminiDailyChallenge1,
+  },
+  {
+    id: "challenge3",
+    title: "React state playground",
+    source: "Gemini",
+    topic: "State",
+    accent: "green",
+    component: GeminiChallengeReactState,
+  },
+  {
+    id: "challenge4",
+    title: "ECS playground",
+    source: "ChatGPT",
+    topic: "Architecture",
+    accent: "rose",
+    component: ChatGPTChallenge2,
+  },
+  {
+    id: "challenge5",
+    title: "String manipulation and algorithms",
+    source: "Gemini",
+    topic: "Algorithms",
+    accent: "amber",
+    component: GeminiDailyChallenge2,
+  },
+  {
+    id: "challenge6",
+    title: "Title case capitalizer with live input",
+    source: "Gemini",
+    topic: "Forms",
+    accent: "cyan",
+    component: GeminiDailyChallenge3,
+  },
+  {
+    id: "challenge7",
+    title: "Array filter and accumulator",
+    source: "Gemini",
+    topic: "Arrays",
+    accent: "green",
+    component: GeminiDailyChallenge4,
+  },
+  {
+    id: "challenge8",
+    title: "Object transformer and key mapper",
+    source: "Gemini",
+    topic: "Objects",
+    accent: "rose",
+    component: GeminiDailyChallenge5,
+  },
+  {
+    id: "challenge9",
+    title: "Event timer and custom hook",
+    source: "Gemini",
+    topic: "Hooks",
+    accent: "amber",
+    component: GeminiDailyChallenge6,
+  },
+  {
+    id: "challenge10",
+    title: "Debounced input",
+    source: "Gemini",
+    topic: "Performance",
+    accent: "cyan",
+    component: GeminiDailyChallenge7,
+  },
+  {
+    id: "challenge11",
+    title: "Simple todo list",
+    source: "Gemini",
+    topic: "State arrays",
+    accent: "green",
+    component: GeminiDailyChallenge8,
+  },
+  {
+    id: "challenge12",
+    title: "Accordion component",
+    source: "Gemini",
+    topic: "UI state",
+    accent: "rose",
+    component: GeminiDailyChallenge9,
+  },
+  {
+    id: "challenge13",
+    title: "Pagination component",
+    source: "Gemini",
+    topic: "Data slicing",
+    accent: "amber",
+    component: GeminiDailyChallenge10,
+  },
+  {
+    id: "challenge14",
+    title: "Star rating component",
+    source: "Gemini",
+    topic: "Interaction",
+    accent: "cyan",
+    component: GeminiDailyChallenge11,
+  },
+  {
+    id: "challenge15",
+    title: "Custom modal dialog",
+    source: "Gemini",
+    topic: "Overlays",
+    accent: "green",
+    component: GeminiDailyChallenge12,
+  },
+  {
+    id: "challenge16",
+    title: "Fetch search and cache",
+    source: "Gemini",
+    topic: "API",
+    accent: "rose",
+    component: GeminiDailyChallenge13,
+  },
+  {
+    id: "challenge17",
+    title: "Custom dropdown menu",
+    source: "Gemini",
+    topic: "Accessibility",
+    accent: "amber",
+    component: GeminiDailyChallenge14,
+  },
+  {
+    id: "challenge18",
+    title: "localStorage state sync",
+    source: "Gemini",
+    topic: "Persistence",
+    accent: "cyan",
+    component: GeminiDailyChallenge15,
+  },
+  {
+    id: "challenge19",
+    title: "Mini idle clicker game",
+    source: "Gemini",
+    topic: "Game loop",
+    accent: "green",
+    component: GeminiDailyChallenge16,
+  },
+  {
+    id: "challenge20",
+    title: "Vocabulary flashcard app",
+    source: "Gemini",
+    topic: "Cards",
+    accent: "rose",
+    component: GeminiDailyChallenge17,
+  },
+  {
+    id: "challenge21",
+    title: "Temperature unit converter",
+    source: "Gemini",
+    topic: "Inputs",
+    accent: "amber",
+    component: GeminiDailyChallenge18,
+  },
+  {
+    id: "challenge22",
+    title: "Dynamic progress bar",
+    source: "Gemini",
+    topic: "Intervals",
+    accent: "cyan",
+    component: GeminiDailyChallenge19,
+  },
+  {
+    id: "challenge23",
+    title: "Drag-and-drop list order",
+    source: "Gemini",
+    topic: "DnD",
+    accent: "green",
+    component: GeminiDailyChallenge20,
+  },
+  {
+    id: "challenge24",
+    title: "Debounced search bar",
+    source: "Gemini",
+    topic: "Search",
+    accent: "rose",
+    component: GeminiDailyChallenge21,
+  },
+  {
+    id: "challenge25",
+    title: "Infinite scroll simulator",
+    source: "Gemini",
+    topic: "Observer",
+    accent: "amber",
+    component: GeminiDailyChallenge22,
+  },
+];
+
+const featureCards = [
+  { icon: Component, label: "25 exercises", value: "Component patterns" },
+  { icon: Layers3, label: "State and hooks", value: "Daily React reps" },
+  { icon: Boxes, label: "Playground", value: "Small focused labs" },
+];
 
 export default function App(): React.JSX.Element {
   const [activeTab, setActiveTab] = React.useState("");
   const [collapsed, setCollapsed] = React.useState(false);
 
-  const challenge1="ChatGPT Challenge 1 - factory like using useContext in React";
-  const challenge2="Gemini Daily Challenge 1 - simple component";
-  const challenge3="Gemini Challenge React State - more complex component with state";
-  const challenge4="ChatGPT Challenge 2 - ECS Playground (game architecture)";
-  const challenge5="Gemini Daily Challenge 2 - string manipulation and algorithms";
-  const challenge6="Gemini Daily Challenge 3 - title case capitalizer with live input";
-  const challenge7="Gemini Daily Challenge 4 - array filter and accumulator";
-  const challenge8="Gemini Daily Challenge 5 - object transformer and key mapper";
-  const challenge9="Gemini Daily Challenge 6 - event timer and custom hook";
-  const challenge10="Gemini Daily Challenge 7 - the debounced input (the API savior)";
-  const challenge11="Gemini Daily Challenge 8 - the simple todo list (state arrays & mutability)";
-  const challenge12="Gemini Daily Challenge 9 - the accordion component (managing derived & shared UI states)";
-  const challenge13="Gemini Daily Challenge 10 - the pagination component (slicing big datasets)";
-  const challenge14="Gemini Daily Challenge 11 - the star rating component (interactive grid states)";
-  const challenge15="Gemini Daily Challenge 12 - the custom modal dialog (DOM portals & layout overlays)";
-  const challenge16="Gemini Daily Challenge 13 - the fetch search & cache component (real API integration)";
-  const challenge17="Gemini Daily Challenge 14 - the custom dropdown menu (accessible keyboard interactivity)";
-  const challenge18="Gemini Daily Challenge 15 - the localStorage state sync (persistent application memory)";
-  const challenge19="Gemini Daily Challenge 16 - the mini idle clicker game (combining all skills learned!)";
-  const challenge20="Gemini Daily Challenge 17 - the key-value vocabulary flashcard app (two-sided UI flipping)";
-  const challenge21="Gemini Daily Challenge 18 - the temperature unit converter (dual-way dependent inputs)";
-  const challenge22="Gemini Daily Challenge 19 - the dynamic progress bar (controlled interval stepping)";
-  const challenge23="Gemini Daily Challenge 20 - the drag-and-drop list order (reordering array indexes)";
-  const challenge24="Gemini Daily Challenge 21 - the debounced search bar (performance-throttling inputs)";
-  const challenge25="Gemini Daily Challenge 22 - the infinite scroll simulator (window intersection observer)";
-
-  function renderActiveTab() {
-    switch (activeTab) {
-      case "challenge1":
-        return <ChatGPTChallenge1 />;
-      case "challenge2":
-        return <GeminiDailyChallenge1 />;
-      case "challenge3":
-        return <GeminiChallengeReactState />;
-      case "challenge4":
-        return <ChatGPTChallenge2 />;
-      case "challenge5":
-        return <GeminiDailyChallenge2 />;
-      case "challenge6":
-        return <GeminiDailyChallenge3 />;
-      case "challenge7":
-        return <GeminiDailyChallenge4 />;
-      case "challenge8":
-        return <GeminiDailyChallenge5 />;
-      case "challenge9":
-        return <GeminiDailyChallenge6 />;
-      case "challenge10":
-        return <GeminiDailyChallenge7 />;
-      case "challenge11":
-        return <GeminiDailyChallenge8 />;
-      case "challenge12":
-        return <GeminiDailyChallenge9 />;
-      case "challenge13":
-        return <GeminiDailyChallenge10 />;
-      case "challenge14":
-        return <GeminiDailyChallenge11 />;
-      case "challenge15":
-        return <GeminiDailyChallenge12 />;
-      case "challenge16":
-        return <GeminiDailyChallenge13 />;
-      case "challenge17":
-        return <GeminiDailyChallenge14 />;
-      case "challenge18":
-        return <GeminiDailyChallenge15 />;
-      case "challenge19":
-        return <GeminiDailyChallenge16 />;
-      case "challenge20":
-        return <GeminiDailyChallenge17 />;
-      case "challenge21":
-        return <GeminiDailyChallenge18 />;
-      case "challenge22":
-        return <GeminiDailyChallenge19 />;
-      case "challenge23":
-        return <GeminiDailyChallenge20 />;
-      case "challenge24":
-        return <GeminiDailyChallenge21 />;
-      case "challenge25":
-        return <GeminiDailyChallenge22 />;
-      default:
-        return null;
-    }
-  }
-
-  function toggleCollapse() {
-    setCollapsed(prev => !prev);
-  }
-
-  function renderNavMenu() {
-    if (collapsed) {
-      return null;
-    }
-    return (
-      <div className="nav-menu" style={{ display: 'flex', flexDirection: 'column', padding: '8px' }}>
-        <button onClick={() => setActiveTab("")}>Home</button>
-        <button onClick={() => setActiveTab("challenge1")}>{challenge1}</button>
-        <button onClick={() => setActiveTab("challenge2")}>{challenge2}</button>
-        <button onClick={() => setActiveTab("challenge3")}>{challenge3}</button>
-        <button onClick={() => setActiveTab("challenge4")}>{challenge4}</button>
-        <button onClick={() => setActiveTab("challenge5")}>{challenge5}</button>
-        <button onClick={() => setActiveTab("challenge6")}>{challenge6}</button>
-        <button onClick={() => setActiveTab("challenge7")}>{challenge7}</button>
-        <button onClick={() => setActiveTab("challenge8")}>{challenge8}</button>
-        <button onClick={() => setActiveTab("challenge9")}>{challenge9}</button>
-        <button onClick={() => setActiveTab("challenge10")}>{challenge10}</button>
-        <button onClick={() => setActiveTab("challenge11")}>{challenge11}</button>
-        <button onClick={() => setActiveTab("challenge12")}>{challenge12}</button>
-        <button onClick={() => setActiveTab("challenge13")}>{challenge13}</button>
-        <button onClick={() => setActiveTab("challenge14")}>{challenge14}</button>
-        <button onClick={() => setActiveTab("challenge15")}>{challenge15}</button>
-        <button onClick={() => setActiveTab("challenge16")}>{challenge16}</button>
-        <button onClick={() => setActiveTab("challenge17")}>{challenge17}</button>
-        <button onClick={() => setActiveTab("challenge18")}>{challenge18}</button>
-        <button onClick={() => setActiveTab("challenge19")}>{challenge19}</button>
-        <button onClick={() => setActiveTab("challenge20")}>{challenge20}</button>
-        <button onClick={() => setActiveTab("challenge21")}>{challenge21}</button>
-        <button onClick={() => setActiveTab("challenge22")}>{challenge22}</button>
-        <button onClick={() => setActiveTab("challenge23")}>{challenge23}</button>
-        <button onClick={() => setActiveTab("challenge24")}>{challenge24}</button>
-        <button onClick={() => setActiveTab("challenge25")}>{challenge25}</button>
-      </div>
-    )
-  }
+  const activeChallenge = challenges.find((challenge) => challenge.id === activeTab);
+  const ActiveChallengeComponent = activeChallenge?.component;
 
   return (
-    <main role="main" className="app">
-      <ThemeProvider defaultTheme="dark" storageKey="react-vite-playground-ui-theme">
-        <div className="app-background" />
-        <div className="app-header" style={{ padding: '16px', borderBottom: '1px solid #ccc' }}>
-          <h1 style={{ margin: 0 }}>React Vite Playground</h1>
-        </div>
-        <div className="nav-menu-container" style={{ position: 'relative', top: 0, left: 0, zIndex: 1000, padding: '8px', borderBottom: '1px solid #ccc' }}>
-          <button onClick={toggleCollapse} style={{ position: 'relative', top: '8px', left: '8px' }}>Expand Tabs</button>
-          {!collapsed && renderNavMenu()}
-        </div>
+    <ThemeProvider defaultTheme="dark" storageKey="react-vite-playground-ui-theme">
+      <main role="main" className="app-shell">
+        <aside className={`challenge-sidebar ${collapsed ? "is-collapsed" : ""}`} aria-label="Challenge navigation">
+          <div className="sidebar-brand">
+            <div className="brand-mark" aria-hidden="true">
+              <FlaskConical size={22} />
+            </div>
+            {!collapsed && (
+              <div>
+                <p>React Vite</p>
+                <strong>Playground</strong>
+              </div>
+            )}
+          </div>
 
-        <div className="tab-content" style={{ position: 'relative', top: '44px', padding: '16px' }}>
-          {renderActiveTab()}
-        </div>
-      </ThemeProvider>
-    </main>
+          <button className="sidebar-toggle" type="button" onClick={() => setCollapsed((value) => !value)}>
+            {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+            <span>{collapsed ? "Expand" : "Collapse"}</span>
+          </button>
+
+          <nav className="challenge-nav">
+            <button className={`nav-item home-item ${activeTab === "" ? "is-active" : ""}`} type="button" onClick={() => setActiveTab("")}>
+              <Home size={18} />
+              <span>Home</span>
+            </button>
+
+            {challenges.map((challenge, index) => (
+              <button
+                className={`nav-item accent-${challenge.accent} ${activeTab === challenge.id ? "is-active" : ""}`}
+                key={challenge.id}
+                type="button"
+                onClick={() => setActiveTab(challenge.id)}
+                title={collapsed ? challenge.title : undefined}
+              >
+                <span className="challenge-number">{String(index + 1).padStart(2, "0")}</span>
+                <span className="nav-copy">
+                  <strong>{challenge.title}</strong>
+                  <small>
+                    {challenge.source} / {challenge.topic}
+                  </small>
+                </span>
+              </button>
+            ))}
+          </nav>
+        </aside>
+
+        <section className="workspace-panel">
+          <header className="workspace-header">
+            <div>
+              <p className="eyebrow">Interactive challenge collection</p>
+              <h1>{activeChallenge ? activeChallenge.title : "React Vite Playground"}</h1>
+            </div>
+            <div className="header-badge">
+              <Sparkles size={16} />
+              <span>{activeChallenge ? activeChallenge.topic : "Ready to explore"}</span>
+            </div>
+          </header>
+
+          {ActiveChallengeComponent ? (
+            <article className={`challenge-stage accent-${activeChallenge.accent}`}>
+              <div className="stage-heading">
+                <div>
+                  <p>{activeChallenge.source}</p>
+                  <h2>{activeChallenge.title}</h2>
+                </div>
+                <span>{activeChallenge.topic}</span>
+              </div>
+              <div className="stage-content">
+                <ActiveChallengeComponent />
+              </div>
+            </article>
+          ) : (
+            <article className="home-stage">
+              <div className="home-hero">
+                <div className="hero-copy">
+                  <p className="eyebrow">Daily React practice</p>
+                  <h2>Pick a lab and keep your component muscles warm.</h2>
+                  <p>
+                    A cleaner home for small React exercises, state experiments, component patterns,
+                    and browser interaction drills.
+                  </p>
+                  <button className="primary-action" type="button" onClick={() => setActiveTab(challenges[0].id)}>
+                    <Code2 size={18} />
+                    Start first challenge
+                  </button>
+                </div>
+                <div className="hero-meter" aria-label={`${challenges.length} available challenges`}>
+                  <span>{challenges.length}</span>
+                  <small>labs</small>
+                </div>
+              </div>
+
+              <div className="feature-grid">
+                {featureCards.map((card) => {
+                  const Icon = card.icon;
+
+                  return (
+                    <div className="feature-card" key={card.label}>
+                      <Icon size={20} />
+                      <span>{card.label}</span>
+                      <strong>{card.value}</strong>
+                    </div>
+                  );
+                })}
+              </div>
+            </article>
+          )}
+        </section>
+      </main>
+    </ThemeProvider>
   );
 }
 
