@@ -38,6 +38,7 @@ import GeminiDailyChallenge19 from "./app/GeminiDailyChallenge19";
 import GeminiDailyChallenge20 from "./app/GeminiDailyChallenge20";
 import GeminiDailyChallenge21 from "./app/GeminiDailyChallenge21";
 import GeminiDailyChallenge22 from "./app/GeminiDailyChallenge22";
+import GeminiDailyChallenge23 from "./app/GeminiDailyChallenge23";
 
 type Challenge = {
   id: string;
@@ -249,10 +250,18 @@ const challenges: Challenge[] = [
     accent: "amber",
     component: GeminiDailyChallenge22,
   },
+  {
+    id: "challenge26",
+    title: "Inventory Merge",
+    source: "Gemini",
+    topic: "Data structures",
+    accent: "green",
+    component: GeminiDailyChallenge23,
+  },
 ];
 
 const featureCards = [
-  { icon: Component, label: "25 exercises", value: "Component patterns" },
+  { icon: Component, label: challenges.length+" exercises", value: "Component patterns" },
   { icon: Layers3, label: "State and hooks", value: "Daily React reps" },
   { icon: Boxes, label: "Playground", value: "Small focused labs" },
 ];
