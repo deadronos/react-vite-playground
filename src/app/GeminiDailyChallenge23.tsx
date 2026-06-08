@@ -47,15 +47,133 @@ Take your time, write out the logic, and let me know when you've got a solution 
 
 */
 
-import React from 'react';
+import React, { type JSX } from 'react';
 
 export default function GeminiDailyChallenge23() {
   return (
     <div>
-      <h1>Gemini Daily Challenge 23: Inventory Merge</h1>
-      <p>Check the console for the merged inventory result!</p>
+      <div>
+        <h1>Gemini Daily Challenge 23: Inventory Merge</h1>
+        <p>Check the console for the merged inventory result!</p>
+      </div>
+      <div>
+        <InventoryMergeComponent />
+      </div>
     </div>
   );
 }
 
+
+type Items = string;
+
+interface InventoryItem {
+  name: Items;
+  quantity: number;
+}
+
+type Inventory = InventoryItem[];
+
+function InventoryMergeComponent(): JSX.Element {
+  const currentInventory: Inventory = [
+    { name: "Iron Ore", quantity: 5 },
+    { name: "Health Potion", quantity: 3 },
+    { name: "Wooden Shield", quantity: 1 }
+  ];
+
+  const lootPile: Inventory = [
+    { name: "Health Potion", quantity: 2 },
+    { name: "Gold Coin", quantity: 100 },
+    { name: "Iron Ore", quantity: 2 }
+  ];
+
+  function InventoryTile(item: InventoryItem) {
+    return (
+      <div>
+        <p>{item.name}: {item.quantity}</p>
+      </div>
+    );
+  }
+
+  function mergeInventory(current: Inventory, loot: Inventory): Inventory {
+    const inventoryMap: Record<string, number> = {};
+
+    // Add current inventory items to the map
+    current.forEach(item => {
+      inventoryMap[item.name] = item.quantity;
+    });
+
+    // Merge loot items into the map
+    loot.forEach(item => {
+      if (inventoryMap[item.name]) {
+        inventoryMap[item.name] += item.quantity; // Increase quantity if item exists
+      } else {
+        inventoryMap[item.name] = item.quantity; // Add new item to the map
+      }
+    });
+
+    // Convert the map back to an array of InventoryItem
+    const mergedInventory: Inventory = Object.keys(inventoryMap).map(name => ({
+      name,
+      quantity: inventoryMap[name]
+    }));
+
+    return mergedInventory;
+  }
+
+  return (
+    <div>
+      {/* Tiles of current inventory */}
+      <h2>Current Inventory:</h2>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+        <div style={{ backgroundColor: 'gray', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <table>
+            <tbody>
+            <tr>
+          {currentInventory.map(item => (
+            <td key={item.name} style={{ border: '3px solid black', padding: '8px' }}>
+            <InventoryTile {...item} />
+            </td>
+            ))
+          }</tr>
+          </tbody>
+          </table>
+        </div>
+      </div>
+      {/* Tiles of loot pile */}
+      <h2>Loot Pile:</h2>
+      <div style={{  display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+        <div style={{ backgroundColor: 'gray', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <table>
+            <tbody>
+            <tr>
+          {lootPile.map(item => (
+            <td key={item.name} style={{ border: '3px solid black', padding: '8px' }}>
+            <InventoryTile {...item} />
+            </td>
+            ))
+          }</tr>
+          </tbody>
+          </table>
+          </div>
+      </div>
+      {/* Merged inventory result */}
+      <h2>Merged Inventory:</h2>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div style={{ backgroundColor: 'gray', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <table>
+            <tbody>
+            <tr>
+          {mergeInventory(currentInventory, lootPile).map(item => (
+            <td key={item.name} style={{ border: '3px solid black', padding: '8px' }}>
+            <InventoryTile {...item} />
+            </td>
+            ))
+          }</tr>
+          </tbody>
+          </table>
+          </div>
+      </div>
+    </div>
+  )
+}
 
