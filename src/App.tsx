@@ -40,6 +40,7 @@ import GeminiDailyChallenge21 from "./app/GeminiDailyChallenge21";
 import GeminiDailyChallenge22 from "./app/GeminiDailyChallenge22";
 import GeminiDailyChallenge23 from "./app/GeminiDailyChallenge23";
 import GeminiDailyChallenge24 from "./app/GeminiDailyChallenge24";
+import GeminiDailyChallenge25 from "./app/GeminiDailyChallenge25";
 
 type Challenge = {
   id: string;
@@ -266,6 +267,14 @@ const challenges: Challenge[] = [
     topic: "Performance",
     accent: "cyan",
     component: GeminiDailyChallenge24,
+  },
+  {
+    id: "challenge28",
+    title: "The Shared Render Pipeline",
+    source: "Gemini",
+    topic: "Canvas",
+    accent: "rose",
+    component: GeminiDailyChallenge25,
   }
 ];
 
