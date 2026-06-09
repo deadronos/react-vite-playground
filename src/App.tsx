@@ -39,6 +39,7 @@ import GeminiDailyChallenge20 from "./app/GeminiDailyChallenge20";
 import GeminiDailyChallenge21 from "./app/GeminiDailyChallenge21";
 import GeminiDailyChallenge22 from "./app/GeminiDailyChallenge22";
 import GeminiDailyChallenge23 from "./app/GeminiDailyChallenge23";
+import GeminiDailyChallenge24 from "./app/GeminiDailyChallenge24";
 
 type Challenge = {
   id: string;
@@ -258,6 +259,14 @@ const challenges: Challenge[] = [
     accent: "green",
     component: GeminiDailyChallenge23,
   },
+  {
+    id: "challenge27",
+    title: "Window Resize Monitor",
+    source: "Gemini",
+    topic: "Performance",
+    accent: "cyan",
+    component: GeminiDailyChallenge24,
+  }
 ];
 
 const featureCards = [
