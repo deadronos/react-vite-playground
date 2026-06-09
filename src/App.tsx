@@ -41,6 +41,7 @@ import GeminiDailyChallenge22 from "./app/GeminiDailyChallenge22";
 import GeminiDailyChallenge23 from "./app/GeminiDailyChallenge23";
 import GeminiDailyChallenge24 from "./app/GeminiDailyChallenge24";
 import GeminiDailyChallenge25 from "./app/GeminiDailyChallenge25";
+import GeminiDailyChallenge26 from "./app/GeminiDailyChallenge26";
 
 type Challenge = {
   id: string;
@@ -275,6 +276,14 @@ const challenges: Challenge[] = [
     topic: "Canvas",
     accent: "rose",
     component: GeminiDailyChallenge25,
+  },
+  {
+    id: "challenge29",
+    title: "The Resource Pooling Engine (Flyweight Pattern)",
+    source: "Gemini",
+    topic: "Canvas",
+    accent: "amber",
+    component: GeminiDailyChallenge26,
   }
 ];
 

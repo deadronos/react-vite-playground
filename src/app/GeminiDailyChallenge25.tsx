@@ -44,10 +44,161 @@ export default function GeminiDailyChallenge25() {
       <p>
         Below is an implementation of the shared render pipeline using React. We will create a master ticker and two independent canvas tiles that register their drawing logic to this ticker.
       </p>
-
+      <ParentDashboard />
     </div>
   );
 }
 
 
+type FrameListener = (timestamp: number) => void;
 
+
+type CentralTickerContextType = {
+  register: (listener: FrameListener) => void;
+  unregister: (listener: FrameListener) => void;
+};
+
+const CentralTickerContext = React.createContext<CentralTickerContextType | null>(null);
+
+function CentralTickerProvider({ children }: { children: React.ReactNode }) {
+  const listenersRef = useRef<Set<FrameListener>>(new Set());
+
+  useEffect(() => {
+    let animationFrameId: number;
+
+    const tick = (timestamp: number) => {
+      listenersRef.current.forEach(listener => listener(timestamp));
+      animationFrameId = requestAnimationFrame(tick);
+    };
+
+    animationFrameId = requestAnimationFrame(tick);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
+  const register = (listener: FrameListener) => {
+    listenersRef.current.add(listener);
+  };
+
+  const unregister = (listener: FrameListener) => {
+    listenersRef.current.delete(listener);
+  };
+
+  return (
+    <CentralTickerContext.Provider value={{ register, unregister }}>
+      {children}
+    </CentralTickerContext.Provider>
+  );
+}
+
+
+
+function ParentDashboard() {
+  return (
+    <CentralTickerProvider>
+      <TileA />
+      <TileB />
+      <TileC />
+    </CentralTickerProvider>
+  );
+
+}
+
+
+function TileA() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { register, unregister } = React.useContext(CentralTickerContext)!;
+
+  useEffect(() => {
+    const draw = (timestamp: number) => {
+      const canvas = canvasRef.current;
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.beginPath();
+          ctx.arc(150, 150, 50 + 20 * Math.sin(timestamp / 500), 0, Math.PI * 2);
+          ctx.fillStyle = 'blue';
+          ctx.fill();
+        }
+      }
+    };
+
+    register(draw);
+    return () => unregister(draw);
+  }, [register, unregister]);
+
+  return <canvas ref={canvasRef} width={300} height={300} />;
+}
+
+function TileB() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { register, unregister } = React.useContext(CentralTickerContext)!;
+
+  useEffect(() => {
+    const draw = (timestamp: number) => {
+      const canvas = canvasRef.current;
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.save();
+          ctx.translate(150, 150);
+          ctx.rotate((timestamp / 1000) % (2 * Math.PI));
+          ctx.fillStyle = 'red';
+          ctx.fillRect(-25, -25, 50, 50);
+          ctx.restore();
+        }
+      }
+    };
+
+    register(draw);
+    return () => unregister(draw);
+  }, [register, unregister]);
+
+  return <canvas ref={canvasRef} width={300} height={300} />;
+}
+
+
+function TileC() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { register, unregister } = React.useContext(CentralTickerContext)!;
+
+  const [hovered, setHovered] = React.useState(false);
+
+  const isHoveredRef = useRef(hovered);
+  useEffect(() => {
+    isHoveredRef.current = hovered;
+  }, [hovered]);
+
+  useEffect(() => {
+    const draw = (timestamp: number) => {
+      const canvas = canvasRef.current;
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.beginPath();
+          ctx.arc(150, 150, isHoveredRef.current ? 70 : 50, 0, Math.PI * 2);
+          ctx.fillStyle = 'green';
+          ctx.fill();
+        }
+      }
+    };
+
+    register(draw);
+    return () => unregister(draw);
+  }, [register, unregister]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      width={300}
+      height={300}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    />
+  );
+}
