@@ -42,6 +42,7 @@ import GeminiDailyChallenge23 from "./app/GeminiDailyChallenge23";
 import GeminiDailyChallenge24 from "./app/GeminiDailyChallenge24";
 import GeminiDailyChallenge25 from "./app/GeminiDailyChallenge25";
 import GeminiDailyChallenge26 from "./app/GeminiDailyChallenge26";
+import GeminiDailyChallenge27 from "./app/GeminiDailyChallenge27";
 
 type Challenge = {
   id: string;
@@ -284,6 +285,14 @@ const challenges: Challenge[] = [
     topic: "Canvas",
     accent: "amber",
     component: GeminiDailyChallenge26,
+  },
+  {
+    id: "challenge30",
+    title: "The Synchronized Range Slider (Min/Max Validation)",
+    source: "Gemini",
+    topic: "Inputs",
+    accent: "cyan",
+    component: GeminiDailyChallenge27,
   }
 ];
 
