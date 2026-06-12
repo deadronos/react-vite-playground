@@ -38,7 +38,7 @@ Drop your custom event bus logic whenever you're ready to look at the structural
 
 */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 {/* inline CSS classes for better visualization */}
 /* CSS Styling Architecture */
@@ -90,7 +90,132 @@ export default function GeminiDailyChallenge29() {
       {/* 🌟 Injection of CSS rules directly into the DOM */}
       <style>{stylesEventEmitter}</style>
       {/* Your Event Emitter Component will go here */}
+      <EventEmitterProvider>
+        <EventEmitterComponent />
+      </EventEmitterProvider>
+    </div>
+  );
+}
 
+
+type CallbackFunction = (data?: unknown) => void;
+
+type eventMap = Record<string, CallbackFunction[]>;
+
+class MyEventEmitter {
+  private events: eventMap = {};
+
+  unsubscribe(eventName: string, callback: CallbackFunction) {
+    if (this.events[eventName]) {
+      this.events[eventName] = this.events[eventName].filter(cb => cb !== callback);
+    }
+  }
+  on(eventName: string, callback: CallbackFunction) {
+    if (!this.events[eventName]) {
+      this.events[eventName] = [];
+    }
+    this.events[eventName].push(callback);
+
+    // Return the unsubscribe function
+    return () => this.unsubscribe(eventName, callback);
+  }
+
+  emit(eventName: string, data?: unknown) {
+    if (this.events[eventName]) {
+      this.events[eventName].forEach(callback => callback(data));
+    }
+  }
+}
+
+
+
+
+function LoggerPanel ({ emitter }: { emitter: MyEventEmitter }) {
+  const [logs, setLogs] = useState<string[]>([]);
+
+  useEffect(()=> {
+    // subscribe and remember unsubscribe function
+    const unsubscribeButton1 =emitter.on("button1-click", (data) => {
+      setLogs(prev => [...prev, `Button 1 clicked with data: ${data}`]);
+    });
+    const unsubscribeButton2 = emitter.on("button2-click", (data) => {
+      setLogs(prev => [...prev, `Button 2 clicked with data: ${data}`]);
+    });
+
+    // Cleanup on unmount
+    return () => {
+      unsubscribeButton1();
+      unsubscribeButton2();
+    }
+  },[]);
+
+  return (
+    <div className="event-emitter-log">
+      <h3>Event Logs:</h3>
+      {logs.map((log, index) => <div key={index}>{log}</div>)}
+    </div>
+  );
+}
+
+function CounterButton1({ emitter }: { emitter: MyEventEmitter }) {
+  const [count, setCount] = useState(0);
+
+  const handleClick = () => {
+    const newCount = count + 1;
+    setCount(newCount);
+    emitter.emit("button1-click", newCount);
+  };
+
+  return (
+    <button className="event-emitter-button" onClick={handleClick}>
+      Button 1 Count: {count}
+    </button>
+  );
+}
+
+function CounterButton2({ emitter }: { emitter: MyEventEmitter }) {
+  const [count, setCount] = useState(0);
+
+  const handleClick = () => {
+    const newCount = count + 1;
+    setCount(newCount);
+    emitter.emit("button2-click", newCount);
+  };
+
+  return (
+    <button className="event-emitter-button" onClick={handleClick}>
+      Button 2 Count: {count}
+    </button>
+  );
+}
+
+
+const emitterContext = React.createContext<MyEventEmitter | null>(null);
+
+function EventEmitterProvider({ children }: { children: React.ReactNode }) {
+  const [emitter] = useState(new MyEventEmitter());
+
+  return (
+    <emitterContext.Provider value={emitter}>
+      {children}
+    </emitterContext.Provider>
+  );
+}
+
+
+function EventEmitterComponent() {
+  const emitter = React.useContext(emitterContext);
+
+  if (!emitter) {
+    throw new Error("EventEmitterComponent must be used within an EventEmitterProvider");
+  }
+
+  return (
+    <div className="event-emitter-container">
+      <h2 className="event-emitter-header">Custom Event Emitter Demo</h2>
+      <CounterButton1 emitter={emitter} />
+      <CounterButton2 emitter={emitter} />
+      <LoggerPanel emitter={emitter} />
     </div>
   );
 }

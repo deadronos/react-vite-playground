@@ -45,6 +45,7 @@ import GeminiDailyChallenge26 from "./app/GeminiDailyChallenge26";
 import GeminiDailyChallenge27 from "./app/GeminiDailyChallenge27";
 import GeminiDailyChallenge28 from "./app/GeminiDailyChallenge28";
 import GeminiDailyChallenge29 from "./app/GeminiDailyChallenge29";
+import GeminiDailyChallenge30 from "./app/GeminiDailyChallenge30";
 
 type Challenge = {
   id: string;
@@ -305,12 +306,20 @@ const challenges: Challenge[] = [
     component: GeminiDailyChallenge28,
   },
   {
-    id: "challenge29",
-    title: "The Resource Pooling Engine (Flyweight Pattern)",
+    id: "challenge32",
+    title: "The Custom Event Emitter Engine (Pub/Sub Event Bus)",
     source: "Gemini",
     topic: "Canvas",
     accent: "amber",
     component: GeminiDailyChallenge29,
+  },
+  {
+    id: "challenge33",
+    title: "The Task Worker Pool (Concurrency Throttling)",
+    source: "Gemini",
+    topic: "Concurrency",
+    accent: "cyan",
+    component: GeminiDailyChallenge30,
   },
 ];
 
