@@ -177,6 +177,40 @@ interface TaskWorkerPoolProps {
   tasks: Task[];
 }
 
+class AsyncTaskOrchestrator {
+  private tasks: Task[];
+  private concurrencyLimit: number;
+  private activeCount = 0;
+  private nextTaskIndex = 0;
+  private emitter: MyEventEmitter;
+
+  constructor(tasks: Task[], emitter: MyEventEmitter, concurrencyLimit = 2) {
+    this.tasks = tasks;
+    this.emitter = emitter;
+    this.concurrencyLimit = concurrencyLimit;
+  }
+
+  run() {
+    for (let i = 0; i < this.concurrencyLimit; i++) {
+      this.runWorker();
+    }
+  }
+
+  private runWorker() {
+    if (this.nextTaskIndex >= this.tasks.length) return;
+
+    const task = this.tasks[this.nextTaskIndex];
+    this.nextTaskIndex++;
+    this.activeCount++;
+    this.emitter.emit("taskStarted", task.name);
+
+    setTimeout(() => {
+      this.activeCount--;
+      this.emitter.emit("taskCompleted", task.name);
+      this.runWorker();
+    }, task.duration);
+  }
+}
 
 function TaskWorkerPoolComponent({ tasks }: TaskWorkerPoolProps) {
   const emitter = React.useContext(emitterContext);
@@ -184,6 +218,8 @@ function TaskWorkerPoolComponent({ tasks }: TaskWorkerPoolProps) {
   const [activeTasks, setActiveTasks] = useState <string[]>([]);
   const [completedTasks, setCompletedTasks] = useState<string[]>([]);
   const [initiated, setInitiated] = useState(false);
+
+  const orchestratorRef = useRef<AsyncTaskOrchestrator | null>(null);
 
   function handleInitiatedButtonClick() {
     if (!initiated) {
@@ -193,6 +229,8 @@ function TaskWorkerPoolComponent({ tasks }: TaskWorkerPoolProps) {
       }
       emitter.emit("taskDispatched", "All tasks dispatched");
       setActiveTasks(tasks.map(task => task.name));
+      orchestratorRef.current = new AsyncTaskOrchestrator(tasks, emitter);
+      orchestratorRef.current.run();
     }
   }
 
@@ -217,7 +255,6 @@ function TaskWorkerPoolComponent({ tasks }: TaskWorkerPoolProps) {
 
   return (
     <div className="task-worker-pool-container">
-      {initiated && <Orchestrator tasks={tasks} />}
       <h2 className="task-worker-pool-header">The Task Worker Pool (Concurrency Throttling)</h2>
       <button className="task-worker-pool-button" onClick={handleInitiatedButtonClick}>
         {initiated ? "Processing..." : "Initiate Task Pool Processing"}
@@ -289,73 +326,4 @@ function LoggerPanel () {
       ))}
     </div>
   );
-}
-
-interface OrchestratorProps {
-  tasks: Task[];
-  limit?: number;
-}
-
-function Orchestrator({ tasks, limit = 2 }: OrchestratorProps): JSX.Element {
-  const emitter = React.useContext(emitterContext);
-
-  if (!emitter) {
-    throw new Error("Orchestrator must be used within an EventEmitterProvider");
-  }
-
-  const nextTaskIndex = useRef(0);
-  const runWorkerRef = useRef<(() => void) | null>(null);
-
-  const runWorker = React.useCallback(() => {
-    if (nextTaskIndex.current >= tasks.length) return;
-
-    const task = tasks[nextTaskIndex.current];
-    nextTaskIndex.current++;
-    emitter.emit("taskStarted", task.name);
-    Worker({ task, onComplete: (taskName) => {
-      emitter.emit("taskCompleted", taskName);
-      runWorkerRef.current?.();
-    } });
-  }, [tasks, emitter]);
-
-  useEffect(() => {
-    runWorkerRef.current = runWorker;
-  });
-
-    const runTaskPool = React.useCallback((limit: number) => {
-    for (let i = 0; i < limit; i++) {
-      runWorkerRef.current?.();
-    }
-  }, []);
-
-  useEffect(() => {
-    if (tasks.length > 0) {
-        runTaskPool(limit);
-    }
-  }, [tasks, limit, runTaskPool]);
-
-  return (
-    <div hidden>
-      {/* empty div */}
-    </div>
-  );
-}
-
-interface WorkerProps {
-  task: Task;
-  onComplete?: (taskName: string) => void;
-}
-
-function Worker({ task, onComplete }: WorkerProps) {
-  const processTask = () => {
-    setTimeout(() => {
-      if (onComplete) {
-        onComplete(task.name);
-      }
-    }, task.duration);
-  };
-
-  processTask();
-
-  return null;
 }
