@@ -43,6 +43,8 @@ import GeminiDailyChallenge24 from "./app/GeminiDailyChallenge24";
 import GeminiDailyChallenge25 from "./app/GeminiDailyChallenge25";
 import GeminiDailyChallenge26 from "./app/GeminiDailyChallenge26";
 import GeminiDailyChallenge27 from "./app/GeminiDailyChallenge27";
+import GeminiDailyChallenge28 from "./app/GeminiDailyChallenge28";
+import GeminiDailyChallenge29 from "./app/GeminiDailyChallenge29";
 
 type Challenge = {
   id: string;
@@ -293,7 +295,23 @@ const challenges: Challenge[] = [
     topic: "Inputs",
     accent: "cyan",
     component: GeminiDailyChallenge27,
-  }
+  },
+  {
+    id: "challenge31",
+    title: "The Exclusive Accordion (Single Open Panel)",
+    source: "Gemini",
+    topic: "UI State",
+    accent: "green",
+    component: GeminiDailyChallenge28,
+  },
+  {
+    id: "challenge29",
+    title: "The Resource Pooling Engine (Flyweight Pattern)",
+    source: "Gemini",
+    topic: "Canvas",
+    accent: "amber",
+    component: GeminiDailyChallenge29,
+  },
 ];
 
 const featureCards = [

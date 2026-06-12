@@ -43,10 +43,64 @@ Set up your numerical fields, hook up your input handlers, wrap your values insi
 
 import React, { useState, useEffect, useReducer } from 'react';
 
+{/* inline CSS classes for better visualization */}
+/* CSS Styling Architecture */
+const stylesDoubleThumbInput = `
+.slider-container {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  background: #444; /* The shared background track */
+}
+
+.double-range-thumb {
+  position: absolute;
+  width: 100%;
+  pointer-events: none; /* 🌟 Crucial: Allows clicks to pass through transparent track areas */
+  background: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+/* Re-enable pointer events ONLY for the physical moving thumb handles */
+.double-range-thumb::-webkit-slider-thumb {
+  pointer-events: auto;
+  cursor: pointer;
+}`;
+
+
 
 export default function GeminiDailyChallenge27() {
   return (
     <div>
+      {/* 🌟 Injection of CSS rules directly into the DOM */}
+      <style>{`
+        .slider-container {
+          position: relative;
+          width: 100%;
+          height: 6px;
+          background: #444;
+          margin-top: 20px;
+        }
+        .double-range-thumb {
+          position: absolute;
+          width: 100%;
+          pointer-events: none;
+          background: none;
+          appearance: none;
+          -webkit-appearance: none;
+        }
+        .double-range-thumb::-webkit-slider-thumb {
+          pointer-events: auto;
+          cursor: pointer;
+          appearance: none;
+          -webkit-appearance: none;
+          height: 16px;
+          width: 16px;
+          border-radius: 50%;
+          background: cyan;
+        }
+      `}</style>
       <h1>Gemini Daily Challenge 27: The Synchronized Range Slider (Min/Max Validation)</h1>
       <p>
         This challenge focuses on creating a synchronized range slider with two numerical inputs representing minimum and maximum values. The key aspect is to ensure that the minimum value cannot exceed the maximum value and vice versa, providing a seamless user experience for range selection.
@@ -107,108 +161,73 @@ function RangeSlider() {
 }
 
 function InputLayer({onChangeCallback, rangeProp, labelProp}:{onChangeCallback: (value: number, label: string) => void, rangeProp: Range, labelProp: string}) {
-  const [internalRange, setInternalRange] = useReducer((state: Range, newRange: Range) => ({ ...state, ...newRange }), rangeProp);
-
-
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const newValue = Number(e.target.value);
-    const clampedValue = labelProp === "Min" ? clampMinToMax(newValue, internalRange.max) : clampMaxToMin(newValue, internalRange.min);
-    if (isNaN(clampedValue)) {
-      console.warn("Invalid number input:", e.target.value);
+    if (isNaN(newValue)) {
+      console.warn("Invalid number input for", labelProp, ":", e.target.value);
       return;
     }
-    if (labelProp === "Min") {
-      setInternalRange({ ...internalRange, min: clampedValue });
-    } else if (labelProp === "Max") {
-      setInternalRange({ ...internalRange, max: clampedValue });
-    } else {
-      console.warn("Unexpected label in handleChange:", labelProp);
-    }
-    onChangeCallback(clampedValue, labelProp);
+    onChangeCallback(newValue, labelProp);
   }
-
-
-  // Sync internal state with parent prop changes
-  useEffect(() => {
-    function syncWithParent() {
-      // Only update internal state if it differs from the current internal state to avoid unnecessary re-renders
-      if (rangeProp.min !== internalRange.min || rangeProp.max !== internalRange.max) {
-        setInternalRange(rangeProp);
-      }
-    }
-    syncWithParent();
-  }, [rangeProp, internalRange]);
 
   return (
     <div>
       <label>{labelProp}</label>
-      <input title={labelProp} placeholder={labelProp} type="number" value={internalRange[labelProp.toLowerCase() as keyof Range]} onChange={handleChange} min={labelProp === "Min" ? absoluteMin : internalRange.min} max={labelProp === "Max" ? absoluteMax : internalRange.max} />
+      <input title={labelProp} placeholder={labelProp} type="number"
+        value={labelProp === "Min" ? rangeProp.min : rangeProp.max}
+        onChange={handleChange}
+        min={labelProp === "Min" ? absoluteMin : rangeProp.min}
+        max={labelProp === "Max" ? absoluteMax : rangeProp.max} />
     </div>
   );
 }
 
 function SliderLayer({ onChangeCallback, rangeProp }: { onChangeCallback: (newMin: number, newMax: number) => void, rangeProp: Range }) {
-  const [internalRange, setInternalRange] = useReducer((state: Range, newRange: Range) => ({ ...state, ...newRange }), rangeProp);
 
-
-  function handleMinSliderChange(e: React.ChangeEvent<HTMLInputElement>) {
+  function handleMinChange(e: React.ChangeEvent<HTMLInputElement>) {
     const newMin = Number(e.target.value);
-    const clampedMin = clampMinToMax(newMin, rangeProp.max);
-    if (isNaN(clampedMin)) {
-      console.warn("Invalid number input for min slider:", e.target.value);
+    if (isNaN(newMin)) {
+      console.warn("Invalid number input for slider min:", e.target.value);
       return;
     }
-    setInternalRange({ ...internalRange, min: clampedMin });
-    onChangeCallback(clampedMin, internalRange.max);
+    onChangeCallback(newMin, rangeProp.max);
   }
 
-  function handleMaxSliderChange(e: React.ChangeEvent<HTMLInputElement>) {
+  function handleMaxChange(e: React.ChangeEvent<HTMLInputElement>) {
     const newMax = Number(e.target.value);
-    const clampedMax = clampMaxToMin(newMax, rangeProp.min);
-    if (isNaN(clampedMax)) {
-      console.warn("Invalid number input for max slider:", e.target.value);
+    if (isNaN(newMax)) {
+      console.warn("Invalid number input for slider max:", e.target.value);
       return;
     }
-    setInternalRange({ ...internalRange, max: clampedMax });
-    onChangeCallback(internalRange.min, clampedMax);
+    onChangeCallback(rangeProp.min, newMax);
   }
-
-  // Sync internal state with parent prop changes
-  useEffect(() => {
-    function syncWithParent() {
-      // Only update internal state if it differs from the current internal state to avoid unnecessary re-renders
-      if (rangeProp.min !== internalRange.min || rangeProp.max !== internalRange.max) {
-        setInternalRange(rangeProp);
-      }
-    }
-    syncWithParent();
-  }, [rangeProp, internalRange]);
 
   return (
-    <div>
-      {/* we need 2 inputs and shared track div */}
-      
+    <div className="slider-container" style={{ position: 'relative', width: '100%', height: '10px', background: '#444', marginTop: '20px' }}>
+      {/* Min Slider Thumb Layer */}
+      <input
+        type="range"
+        min={absoluteMin}
+        max={absoluteMax}
+        value={rangeProp.min}
+        onChange={handleMinChange}
+        className="double-range-thumb"
+        style={{ position: 'absolute', top: 0, left: 0, width: '100%', pointerEvents: 'none', background: 'none', appearance: 'none', WebkitAppearance: 'none' }}
+      />
+      {/* Max Slider Thumb Layer */}
+      <input
+        type="range"
+        min={absoluteMin}
+        max={absoluteMax}
+        value={rangeProp.max}
+        onChange={handleMaxChange}
+        className="double-range-thumb"
+        style={{ position: 'absolute', top: 0, left: 0, width: '100%', pointerEvents: 'none', background: 'none', appearance: 'none', WebkitAppearance: 'none' }}
+      />
     </div>
   );
 }
 
 
-class CustomDualInputSlider extends HTMLElement {
-  constructor() {
-    super();
-    // Initialization code for the custom element can go here
-  }
 
-  connectedCallback() {
-    // Code to run when the element is added to the DOM can go here
-  }
-
-  disconnectedCallback() {
-    // Code to run when the element is removed from the DOM can go here
-  }
-
-  // Additional methods for the custom element can be defined here
-}
-
-customElements.define('custom-dual-input-slider', CustomDualInputSlider);
