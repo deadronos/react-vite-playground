@@ -46,6 +46,7 @@ import GeminiDailyChallenge27 from "./app/GeminiDailyChallenge27";
 import GeminiDailyChallenge28 from "./app/GeminiDailyChallenge28";
 import GeminiDailyChallenge29 from "./app/GeminiDailyChallenge29";
 import GeminiDailyChallenge30 from "./app/GeminiDailyChallenge30";
+import GeminiDailyChallenge31 from "./app/GeminiDailyChallenge31";
 
 type Challenge = {
   id: string;
@@ -320,6 +321,14 @@ const challenges: Challenge[] = [
     topic: "Concurrency",
     accent: "cyan",
     component: GeminiDailyChallenge30,
+  },
+  {
+    id: "challenge34",
+    title: "The Matrix Multiplier (Mathematical Memory Grid Mapping)",
+    source: "Gemini",
+    topic: "Math",
+    accent: "green",
+    component: GeminiDailyChallenge31,
   },
 ];
 
