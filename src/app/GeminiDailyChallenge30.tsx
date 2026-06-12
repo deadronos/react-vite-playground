@@ -297,7 +297,6 @@ interface OrchestratorProps {
 }
 
 function Orchestrator({ tasks, limit = 2 }: OrchestratorProps): JSX.Element {
-  // Implementation of the task worker pool logic will go here
   const emitter = React.useContext(emitterContext);
 
   if (!emitter) {
@@ -305,6 +304,7 @@ function Orchestrator({ tasks, limit = 2 }: OrchestratorProps): JSX.Element {
   }
 
   const nextTaskIndex = useRef(0);
+  const runWorkerRef = useRef<(() => void) | null>(null);
 
   const runWorker = React.useCallback(() => {
     if (nextTaskIndex.current >= tasks.length) return;
@@ -314,28 +314,25 @@ function Orchestrator({ tasks, limit = 2 }: OrchestratorProps): JSX.Element {
     emitter.emit("taskStarted", task.name);
     Worker({ task, onComplete: (taskName) => {
       emitter.emit("taskCompleted", taskName);
+      runWorkerRef.current?.();
     } });
   }, [tasks, emitter]);
 
+  useEffect(() => {
+    runWorkerRef.current = runWorker;
+  });
 
-  const runTaskPool = React.useCallback( (tasks: Task[], limit: number) => {
+    const runTaskPool = React.useCallback((limit: number) => {
     for (let i = 0; i < limit; i++) {
-      runWorker();
+      runWorkerRef.current?.();
     }
-  },[ runWorker]);
+  }, []);
 
-
-
-  // we are passed tasks to Complete which will eventually run out
-  useEffect(()=>{
-    // run on tasks change, we want to start the worker pool if there are tasks to complete
-    if(tasks.length > 0){
-      // start the worker pool
-      runTaskPool(tasks, limit);
+  useEffect(() => {
+    if (tasks.length > 0) {
+        runTaskPool(limit);
     }
-
-  },[tasks, limit,runTaskPool]);
-
+  }, [tasks, limit, runTaskPool]);
 
   return (
     <div hidden>
@@ -344,16 +341,12 @@ function Orchestrator({ tasks, limit = 2 }: OrchestratorProps): JSX.Element {
   );
 }
 
-
 interface WorkerProps {
   task: Task;
   onComplete?: (taskName: string) => void;
 }
 
 function Worker({ task, onComplete }: WorkerProps) {
-
-  // Worker function that will process tasks will go here
-
   const processTask = () => {
     setTimeout(() => {
       if (onComplete) {
@@ -364,8 +357,5 @@ function Worker({ task, onComplete }: WorkerProps) {
 
   processTask();
 
-  return null; // Placeholder until the logic is implemented
+  return null;
 }
-
-
-
