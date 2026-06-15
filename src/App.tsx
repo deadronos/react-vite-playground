@@ -47,6 +47,8 @@ import GeminiDailyChallenge28 from "./app/GeminiDailyChallenge28";
 import GeminiDailyChallenge29 from "./app/GeminiDailyChallenge29";
 import GeminiDailyChallenge30 from "./app/GeminiDailyChallenge30";
 import GeminiDailyChallenge31 from "./app/GeminiDailyChallenge31";
+import GeminiDailyChallenge32 from "./app/GeminiDailyChallenge32";
+import GeminiDailyChallenge33 from "./app/GeminiDailyChallenge33";
 
 type Challenge = {
   id: string;
@@ -329,6 +331,22 @@ const challenges: Challenge[] = [
     topic: "Math",
     accent: "green",
     component: GeminiDailyChallenge31,
+  },
+  {
+    id: "challenge35",
+    title: "Axis-Aligned Bounding Box (AABB) Collision Detection",
+    source: "Gemini",
+    topic: "Math",
+    accent: "rose",
+    component: GeminiDailyChallenge32,
+  },
+  {
+    id: "challenge36",
+    title: "The Discrete Grid Pathfinding Step (Breadth-First Search)",
+    source: "Gemini",
+    topic: "Algorithms",
+    accent: "amber",
+    component: GeminiDailyChallenge33,
   },
 ];
 
