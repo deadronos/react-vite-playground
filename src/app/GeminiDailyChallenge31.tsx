@@ -49,11 +49,84 @@ Build out your scaling matrix math, wire your nested array maps safely to protec
 import React, { useState } from 'react';
 
 export default function GeminiDailyChallenge31() {
+  const [multiplier, setMultiplier] = useState(2);
+
+  function handleMultiplierChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const newMultiplier = parseFloat(event.target.value);
+    if (!isNaN(newMultiplier)) {
+      setMultiplier(newMultiplier);
+    }
+  }
+
   return (
     <div>
       <h1>Gemini Daily Challenge 31: The Matrix Multiplier</h1>
       <p>Write a calculation utility function that takes a complex 2D grid matrix of numbers and multiplies every index element inside it by a dynamic, variable scalar number—returning a completely new, immutable copy of the transformed grid structure.</p>
-
+      <div>
+        <p>Inital Matrix</p>
+        <MatrixDisplayComponent matrix={initialMatrix} />
+      </div>
+      <div style={{ marginTop: '16px' }}>
+        <p>Multiplier Input</p>
+        <input type="number" value={multiplier} onChange={handleMultiplierChange} />
+      </div>
+      <div style={{ marginTop: '16px' }}>
+        <p>Scaled Matrix (Multiplier: {multiplier})</p>
+        <MatrixScaledDisplayComponent matrix={initialMatrix} multiplier={multiplier} />
+      </div>
     </div>
+  )
+}
+
+
+const styles = {
+  matrixGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(3, 40px)',
+    gap: '8px',
+    fontFamily: 'monospace',
+  }
+}
+
+type MatrixProps = {
+  matrix: Matrix;
+}
+
+
+type Matrix = number[][];
+
+const initialMatrix: Matrix = [
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9]
+];
+
+
+function MatrixDisplayComponent({ matrix }: MatrixProps) {
+  return (
+    <div style={styles.matrixGrid}>
+      {matrix.flat().map((value, index) => (
+        <div key={index}>{value}</div>
+      ))}
+    </div>
+  );
+}
+
+
+function MatrixScaledDisplayComponent({ matrix, multiplier }: { matrix: Matrix, multiplier: number }) {
+  const scaledMatrix: Matrix = scaleMatrix(matrix, multiplier);
+  return (
+    <div style={styles.matrixGrid}>
+      {scaledMatrix.flat().map((value, index) => (
+        <div key={index}>{value}</div>
+      ))}
+    </div>
+  );
+}
+
+
+function scaleMatrix(matrix: Matrix, factor: number): Matrix {
+  return matrix.map(row =>
+    row.map(value => value * factor)
   );
 }
