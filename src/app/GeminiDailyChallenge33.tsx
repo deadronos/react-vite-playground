@@ -42,7 +42,7 @@ Render the grid on your display using separate block squares (e.g., green for st
 
 */
 
-import React from "react";
+import React, {useState, useEffect, useContext, useMemo} from "react";
 
 export default function GeminiDailyChallenge33(): React.JSX.Element {
 
@@ -50,6 +50,161 @@ export default function GeminiDailyChallenge33(): React.JSX.Element {
     <div>
       <h2>Gemini Daily Challenge 33 - the discrete grid pathfinding step (breadth-first search)</h2>
       {/* Your implementation of the BFS pathfinding algorithm goes here */}
+      <TickProvider> {/* This provider will manage the tick state for your BFS visualization */ }
+        <NavigationGridComponent grid={navigationGrid} startPoint={startPoint} endPoint={endPoint} />
+      </TickProvider>
     </div>
   );
+}
+
+
+type Coordinate = {
+  row: number;
+  col: number;
+};
+
+type Grid = number[][];
+
+// 0 represents a walkable path, 1 represents a solid debris block
+type MapGrid = {
+  grid: Grid
+}
+
+const navigationGrid: Grid = [
+  [0, 0, 1, 0],
+  [0, 1, 0, 0],
+  [0, 0, 0, 1],
+  [1, 0, 0, 0]
+];
+
+const startPoint: Coordinate = { row: 0, col: 0 };
+const endPoint: Coordinate = { row: 2, col: 2 };
+
+
+function NavigationGridComponent({grid, startPoint, endPoint}: {grid: Grid, startPoint: Coordinate, endPoint: Coordinate}): React.JSX.Element {
+  const [initialMap, setInitialMap] = useState<MapGrid>({ grid });
+  const [currentPosition, setCurrentPosition] = useState<Coordinate>(startPoint);
+  const [currentEndPoint, setCurrentEndPoint] = useState<Coordinate>(endPoint);
+  const tick = useTick();
+  const pathFinder = useMemo(() => new BFSPathFinder(initialMap.grid, currentPosition, currentEndPoint), [initialMap, currentPosition, currentEndPoint]);
+
+
+
+  useEffect(() => {
+    // This effect could be used to trigger the BFS algorithm and update the grid visualization based on the current tick
+    // For example, you could run the BFS step by step and update the grid state to show the pathfinding process
+      const distance = pathFinder.findShortestPathDistance();
+      console.log(`Current Tick: ${tick}, Distance from Start to End: ${distance}`);
+
+
+  }, [tick, pathFinder]);
+
+  return (
+    <div>
+      {/* Render the grid here, using different colors or symbols for walkable paths, obstacles, start, and end points */}
+      <RenderGrid grid={initialMap.grid} startPoint={startPoint} endPoint={currentEndPoint} />
+      <p>Current Tick: {tick}</p>
+    </div>
+  )
+}
+
+
+function RenderGrid({grid, startPoint, endPoint}: {grid: Grid, startPoint: Coordinate, endPoint: Coordinate}): React.JSX.Element {
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: `repeat(${grid[0].length}, 40px)`, gap: '2px' }}>
+      {grid.map((row, rowIndex) =>
+        row.map((cell, colIndex) => {
+          let backgroundColor = cell === 1 ? 'darkgray' : 'lightgray'; // Obstacle vs walkable
+          if (rowIndex === startPoint.row && colIndex === startPoint.col) {
+            backgroundColor = 'green'; // Start point
+          } else if (rowIndex === endPoint.row && colIndex === endPoint.col) {
+            backgroundColor = 'red'; // End point
+          }
+          return <div key={`${rowIndex}-${colIndex}`} style={{ width: '40px', height: '40px', backgroundColor }} />;
+        })
+      )}
+    </div>
+  );
+}
+
+const TickContext = React.createContext<number>(0);
+
+
+
+function useTick(): number {
+  return useContext(TickContext);
+}
+
+function TickProvider( {children}: {children: React.ReactNode}): React.JSX.Element {
+
+  const [tick, setTick] = useState<number>(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTick(prev => prev + 1);
+    }, 1000); // Increment tick every second
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, []);
+
+  return (
+    <TickContext.Provider value={tick}>
+      {children}
+    </TickContext.Provider>
+  );
+}
+
+
+
+class BFSPathFinder {
+  grid: Grid;
+  start: Coordinate;
+  end: Coordinate;
+
+  constructor(grid: Grid, start: Coordinate, end: Coordinate) {
+    this.grid = grid;
+    this.start = start;
+    this.end = end;
+  }
+
+  findShortestPathDistance(): number | null {
+    const queue: { row: number; col: number; steps: number }[] = [
+      { row: this.start.row, col: this.start.col, steps: 0 }
+    ];
+    const visited = new Set<string>();
+    visited.add(`${this.start.row},${this.start.col}`);
+
+    while (queue.length > 0) {
+      const current = queue.shift()!;
+      if (current.row === this.end.row && current.col === this.end.col) {
+        return current.steps; // Found the target
+      }
+
+      // Explore neighbors (Up, Down, Left, Right)
+      const directions = [
+        { rowOffset: -1, colOffset: 0 }, // Up
+        { rowOffset: 1, colOffset: 0 },  // Down
+        { rowOffset: 0, colOffset: -1 }, // Left
+        { rowOffset: 0, colOffset: 1 }   // Right
+      ];
+
+      for (const { rowOffset, colOffset } of directions) {
+        const newRow = current.row + rowOffset;
+        const newCol = current.col + colOffset;
+
+        // Check bounds and if the cell is walkable
+        if (
+          newRow >= 0 && newRow < this.grid.length &&
+          newCol >= 0 && newCol < this.grid[0].length &&
+          this.grid[newRow][newCol] === 0 &&
+          !visited.has(`${newRow},${newCol}`)
+        ) {
+          visited.add(`${newRow},${newCol}`);
+          queue.push({ row: newRow, col: newCol, steps: current.steps + 1 });
+        }
+      }
+    }
+
+    return null; // No path found
+  }
 }
