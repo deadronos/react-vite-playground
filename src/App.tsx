@@ -49,6 +49,7 @@ import GeminiDailyChallenge30 from "./app/GeminiDailyChallenge30";
 import GeminiDailyChallenge31 from "./app/GeminiDailyChallenge31";
 import GeminiDailyChallenge32 from "./app/GeminiDailyChallenge32";
 import GeminiDailyChallenge33 from "./app/GeminiDailyChallenge33";
+import GeminiDailyChallenge34 from "./app/GeminiDailyChallenge34";
 
 type Challenge = {
   id: string;
@@ -347,6 +348,14 @@ const challenges: Challenge[] = [
     topic: "Algorithms",
     accent: "amber",
     component: GeminiDailyChallenge33,
+  },
+  {
+    id: "challenge37",
+    title: "The Game Loop Matrix Tick (Real-Time Grid Agent Animation)",
+    source: "Gemini",
+    topic: "Animation",
+    accent: "cyan",
+    component: GeminiDailyChallenge34,
   },
 ];
 
