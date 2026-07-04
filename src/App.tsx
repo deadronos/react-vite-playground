@@ -50,6 +50,7 @@ import GeminiDailyChallenge31 from "./app/GeminiDailyChallenge31";
 import GeminiDailyChallenge32 from "./app/GeminiDailyChallenge32";
 import GeminiDailyChallenge33 from "./app/GeminiDailyChallenge33";
 import GeminiDailyChallenge34 from "./app/GeminiDailyChallenge34";
+import GeminiIdleGameChallenge1 from "./app/GeminiIdleGameChallenge1";
 
 type Challenge = {
   id: string;
@@ -356,6 +357,14 @@ const challenges: Challenge[] = [
     topic: "Animation",
     accent: "cyan",
     component: GeminiDailyChallenge34,
+  },
+  {
+    id: "challenge38",
+    title: "Alchemist's Apprentice — Idle Game Challenge",
+    source: "Gemini",
+    topic: "Idle Game",
+    accent: "amber",
+    component: GeminiIdleGameChallenge1,
   },
 ];
 
